@@ -131,4 +131,23 @@ mod tests {
         assert_eq!(rules[0].toboggan_validate("cdefg"), false);
         assert_eq!(rules[0].toboggan_validate("ccccccccc"), false);
     }
+
+    #[test]
+    fn parse_validation() {
+        assert_eq!(
+            PasswordRule::from_str("1-3 a").expect("Could not convert rule"),
+            PasswordRule {
+                values: (1, 3),
+                letter: 'a',
+            }
+        );
+
+        assert_eq!(
+            PasswordRule::from_str("80-90 f").expect("Could not convert rule"),
+            PasswordRule {
+                values: (80, 90),
+                letter: 'f',
+            }
+        );
+    }
 }
