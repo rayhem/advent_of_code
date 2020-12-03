@@ -5,21 +5,34 @@ pub struct Day02 {}
 
 impl Solution for Day02 {
     fn part_one(&self, input: &str) -> Option<String> {
-        let mut count = 0;
-        for line in input.lines() {
-            let tokens: Vec<_> = line.split(':').collect();
-            let rule = PasswordRule::from_str(tokens[0]).expect("Could not parse rule");
-            if rule.sled_validate(tokens[1]) {
-                count += 1;
-            }
-        }
-
-        Some(count.to_string())
+        Some(
+            input
+                .lines()
+                .map(as_pair)
+                .filter(|(rule, password)| rule.sled_validate(password))
+                .count()
+                .to_string(),
+        )
     }
 
     fn part_two(&self, input: &str) -> Option<String> {
-        None
+        Some(
+            input
+                .lines()
+                .map(as_pair)
+                .filter(|(rule, password)| rule.toboggan_validate(password))
+                .count()
+                .to_string(),
+        )
     }
+}
+
+fn as_pair(s: &str) -> (PasswordRule, &str) {
+    let mut tokens = s.split(':');
+    (
+        PasswordRule::from_str(tokens.next().unwrap()).unwrap(),
+        tokens.next().unwrap(),
+    )
 }
 
 #[derive(Debug, PartialEq)]
@@ -35,7 +48,7 @@ impl PasswordRule {
     }
 
     fn toboggan_validate(&self, password: &str) -> bool {
-        let chars = password.chars();
+        let chars = password.chars().filter(|c| !c.is_whitespace());
         let l1 = chars
             .clone()
             .nth(self.values.0 as usize - 1)
@@ -45,9 +58,7 @@ impl PasswordRule {
             .nth(self.values.1 as usize - 1)
             .unwrap_or_default();
 
-        let b1 = l1 == self.letter;
-        let b2 = l2 == self.letter;
-        b1 || b2 && !(b1 && b2)
+        (l1 == self.letter) != (l2 == self.letter)
     }
 }
 
