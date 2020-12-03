@@ -6,22 +6,14 @@ pub struct Day02 {}
 impl Solution for Day02 {
     fn part_one(&self, input: &str) -> Option<String> {
         Some(
-            input
-                .lines()
-                .map(as_pair)
-                .filter(|(rule, password)| rule.sled_validate(password))
-                .count()
+            count_valid_passwords(input, |(rule, password)| rule.sled_validate(password))
                 .to_string(),
         )
     }
 
     fn part_two(&self, input: &str) -> Option<String> {
         Some(
-            input
-                .lines()
-                .map(as_pair)
-                .filter(|(rule, password)| rule.toboggan_validate(password))
-                .count()
+            count_valid_passwords(input, |(rule, password)| rule.toboggan_validate(password))
                 .to_string(),
         )
     }
@@ -33,6 +25,10 @@ fn as_pair(s: &str) -> (PasswordRule, &str) {
         PasswordRule::from_str(tokens.next().unwrap()).unwrap(),
         tokens.next().unwrap(),
     )
+}
+
+fn count_valid_passwords(input: &str, validator: fn(&(PasswordRule, &str)) -> bool) -> usize {
+    input.lines().map(as_pair).filter(validator).count()
 }
 
 #[derive(Debug, PartialEq)]
