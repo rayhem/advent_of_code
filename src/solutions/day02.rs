@@ -5,7 +5,16 @@ pub struct Day02 {}
 
 impl Solution for Day02 {
     fn part_one(&self, input: &str) -> Option<String> {
-        None
+        let mut count = 0;
+        for line in input.lines() {
+            let tokens: Vec<_> = line.split(':').collect();
+            let rule = PasswordRule::from_str(tokens[0]).expect("Could not parse rule");
+            if rule.validate(tokens[1]) {
+                count += 1;
+            }
+        }
+
+        Some(count.to_string())
     }
 
     fn part_two(&self, input: &str) -> Option<String> {
