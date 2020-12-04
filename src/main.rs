@@ -6,6 +6,7 @@ fn main() {
         Some(Box::new(day01::Day01 {})),
         Some(Box::new(day02::Day02 {})),
         Some(Box::new(day03::Day03 {})),
+        Some(Box::new(day04::Day04 {})),
     ];
 
     for (day, solution) in solutions.iter().enumerate() {
@@ -13,8 +14,9 @@ fn main() {
 
         match solution {
             Some(x) => {
-                let input = std::fs::read_to_string(format!("inputs/day{}.txt", day))
-                    .expect("Could not open file");
+                let fname = format!("inputs/day{}.txt", day);
+                let input =
+                    std::fs::read_to_string(&fname).expect(&format!("File {} not found", fname));
                 println!("Day {}: {:?}", day, x.run(input.as_str()));
             }
             None => println!("Day {}: -- UNIMPLEMENTED --", day),
