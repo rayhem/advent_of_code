@@ -2,6 +2,8 @@ use std::collections::HashSet;
 
 use crate::solutions::Solution;
 
+type AnswerSet = HashSet<char>;
+
 pub struct Day06 {}
 
 impl Solution for Day06 {
@@ -9,7 +11,7 @@ impl Solution for Day06 {
         Some(
             num_questions(
                 input,
-                (HashSet::new(), |acc, x| acc.union(&x).map(|c| *c).collect()),
+                (HashSet::new(), |acc, x| acc.union(&x).copied().collect()),
             )
             .to_string(),
         )
@@ -20,7 +22,7 @@ impl Solution for Day06 {
             num_questions(
                 input,
                 (('a'..='z').collect(), |acc, x| {
-                    acc.intersection(&x).map(|c| *c).collect()
+                    acc.intersection(&x).copied().collect()
                 }),
             )
             .to_string(),
@@ -28,20 +30,16 @@ impl Solution for Day06 {
     }
 }
 
-fn num_questions(
-    input: &str,
-    (base, accumulator): (
-        HashSet<char>,
-        fn(HashSet<char>, HashSet<char>) -> HashSet<char>,
-    ),
-) -> usize {
+type SetAccumulation = (AnswerSet, fn(AnswerSet, AnswerSet) -> AnswerSet);
+
+fn num_questions(input: &str, (base, accumulator): SetAccumulation) -> usize {
     input
         .split("\n\n")
         .map(|group| {
             group
                 .lines()
-                .map(|line| line.chars().collect::<HashSet<char>>())
-                .fold(base.clone(), |acc, x| accumulator(acc, x))
+                .map(|line| line.chars().collect::<AnswerSet>())
+                .fold(base.clone(), accumulator)
                 .len()
         })
         .sum::<usize>()

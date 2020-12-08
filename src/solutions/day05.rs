@@ -57,7 +57,7 @@ impl Bounds {
     }
 }
 
-fn walk(s: &Vec<char>, mut bounds: Bounds) -> Result<i32, Day05Error> {
+fn walk(s: &[char], mut bounds: Bounds) -> Result<i32, Day05Error> {
     for c in s {
         match c {
             'F' | 'L' => bounds.upper = bounds.mid(),

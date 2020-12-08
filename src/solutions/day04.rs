@@ -46,11 +46,11 @@ impl FromStr for Height {
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         let (i, _) = s.char_indices().rev().nth(1).unwrap();
-        return Ok(match &s[i..] {
+        Ok(match &s[i..] {
             "cm" => Height::Metric(s[..i].parse::<i32>()?),
             "in" => Height::Imperial(s[..i].parse::<i32>()?),
             _ => Height::Unknown(s.parse::<i32>()?),
-        });
+        })
     }
 }
 

@@ -15,7 +15,7 @@ impl Solution for Day07 {
             let mut to_check = children.clone();
             while !to_check.is_empty() {
                 if let Some((_, child)) = to_check.pop() {
-                    if child == String::from("shiny gold") {
+                    if child == *"shiny gold" {
                         count += 1;
                         continue 'bags;
                     } else {
@@ -35,11 +35,11 @@ impl Solution for Day07 {
 }
 
 trait ContainsBags {
-    fn count_bags(&self, target: &String) -> usize;
+    fn count_bags(&self, target: &str) -> usize;
 }
 
 impl ContainsBags for Luggage {
-    fn count_bags(&self, target: &String) -> usize {
+    fn count_bags(&self, target: &str) -> usize {
         let children = &self[target];
 
         1 + children

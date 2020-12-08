@@ -18,8 +18,8 @@ fn main() {
         match solution {
             Some(x) => {
                 let fname = format!("inputs/day{}.txt", day);
-                let input =
-                    std::fs::read_to_string(&fname).expect(&format!("File {} not found", fname));
+                let input = std::fs::read_to_string(&fname)
+                    .unwrap_or_else(|_| panic!("File {} not found", fname));
                 println!("Day {}: {:?}", day, x.run(input.as_str()));
             }
             None => println!("Day {}: -- UNIMPLEMENTED --", day),
