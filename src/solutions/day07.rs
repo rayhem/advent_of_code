@@ -2,24 +2,24 @@ use crate::solutions::Solution;
 use itertools::Itertools;
 use std::collections::HashMap;
 
+type Luggage = HashMap<String, Vec<(i32, String)>>;
+
 pub struct Day07 {}
 
 impl Solution for Day07 {
     fn part_one(&self, input: &str) -> Option<String> {
-        let bags: HashMap<_, _> = input.lines().map(parse_contents).collect();
+        let luggage: Luggage = input.lines().map(parse_contents).collect();
         let mut count = 0;
 
-        let target = String::from("shiny gold");
-
-        'bags: for (_, children) in &bags {
+        'bags: for children in luggage.values() {
             let mut to_check = children.clone();
             while !to_check.is_empty() {
                 if let Some((_, child)) = to_check.pop() {
-                    if child == target {
+                    if child == String::from("shiny gold") {
                         count += 1;
                         continue 'bags;
                     } else {
-                        to_check.append(&mut bags[&child].clone());
+                        to_check.append(&mut luggage[&child].clone());
                     }
                 }
             }
@@ -28,8 +28,24 @@ impl Solution for Day07 {
         Some(count.to_string())
     }
 
-    fn part_two(&self, _input: &str) -> Option<String> {
-        None
+    fn part_two(&self, input: &str) -> Option<String> {
+        let luggage: Luggage = input.lines().map(parse_contents).collect();
+        Some((luggage.count_bags(&"shiny gold".to_owned()) - 1).to_string())
+    }
+}
+
+trait ContainsBags {
+    fn count_bags(&self, target: &String) -> usize;
+}
+
+impl ContainsBags for Luggage {
+    fn count_bags(&self, target: &String) -> usize {
+        let children = &self[target];
+
+        1 + children
+            .iter()
+            .map(|(num, bag)| (*num as usize) * self.count_bags(bag))
+            .sum::<usize>()
     }
 }
 
