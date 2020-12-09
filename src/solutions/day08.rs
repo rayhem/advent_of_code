@@ -5,17 +5,35 @@ pub struct Day08 {}
 
 impl Solution for Day08 {
     fn part_one(&self, input: &str) -> Option<String> {
-        let instructions = input
-            .lines()
-            .map(|l| l.parse::<Instruction>().unwrap())
-            .collect::<Tape>();
-
-        Some(VirtualMachine::new(instructions).run().acc.to_string())
+        Some(
+            VirtualMachine::from(parse_input(input))
+                .run()
+                .acc
+                .to_string(),
+        )
     }
 
-    fn part_two(&self, _input: &str) -> Option<String> {
-        None
+    fn part_two(&self, input: &str) -> Option<String> {
+        let tape = parse_input(input);
+        Some(
+            tape.iter()
+                .enumerate()
+                .filter(|(_, op)| !matches!(op, Instruction::Acc(_)))
+                .map(|(i, _)| VirtualMachine::from(swap_instruction(tape.clone(), i)).run())
+                .filter(|vm| vm.is_ok())
+                .map(|vm| vm.acc)
+                .next()
+                .unwrap()
+                .to_string(),
+        )
     }
+}
+
+fn parse_input(input: &str) -> Tape {
+    input
+        .lines()
+        .map(|l| l.parse::<Instruction>().unwrap())
+        .collect::<Tape>()
 }
 
 type Tape = Vec<Instruction>;
@@ -30,7 +48,7 @@ enum Day08Error {
 enum Instruction {
     Acc(i32),
     Jmp(i32),
-    Nop,
+    Nop(i32),
 }
 
 impl std::str::FromStr for Instruction {
@@ -42,10 +60,12 @@ impl std::str::FromStr for Instruction {
             .collect_tuple()
             .ok_or(Day08Error::BadCommand)?;
 
+        let val = arg.parse().unwrap();
+
         match cmd {
-            "acc" => Ok(Instruction::Acc(arg.parse().unwrap())),
-            "jmp" => Ok(Instruction::Jmp(arg.parse().unwrap())),
-            "nop" => Ok(Instruction::Nop),
+            "acc" => Ok(Instruction::Acc(val)),
+            "jmp" => Ok(Instruction::Jmp(val)),
+            "nop" => Ok(Instruction::Nop(val)),
             _ => Err(Day08Error::UnknownCommand),
         }
     }
@@ -56,6 +76,7 @@ enum Status {
     NotStarted,
     Executing,
     InfiniteLoop,
+    Failed,
     Terminated,
 }
 
@@ -69,19 +90,21 @@ struct VirtualMachine {
     pub acc: i32,
 }
 
-impl VirtualMachine {
-    fn new(instructions: Vec<Instruction>) -> Self {
-        let n = instructions.len();
+impl From<Tape> for VirtualMachine {
+    fn from(tape: Tape) -> Self {
+        let n = tape.len();
         VirtualMachine {
-            instructions: instructions,
+            instructions: tape,
             hit_count: vec![0; n],
             status: Status::NotStarted,
             ip: 0,
             acc: 0,
         }
     }
+}
 
-    fn run(&mut self) -> &Self {
+impl VirtualMachine {
+    fn run(mut self) -> Self {
         while self.status != Status::Terminated && self.status != Status::InfiniteLoop {
             self.step();
         }
@@ -89,28 +112,26 @@ impl VirtualMachine {
         self
     }
 
-    fn step(&mut self) -> &Self {
-        self.hit_count[self.ip as usize] += 1;
+    fn step(&mut self) {
         self.set_status();
 
         if self.status == Status::Executing {
-            self.run_current_instruction()
+            self.hit_count[self.ip as usize] += 1;
+            self.run_current_instruction();
         }
-
-        self
     }
 
     fn set_status(&mut self) {
         let ip = self.ip as usize;
 
-        self.status = if ip == self.instructions.len() {
-            Status::Terminated
-        } else {
-            match self.hit_count[ip] {
-                i if i <= 1 => Status::Executing,
+        self.status = match ip {
+            _ if ip == self.instructions.len() => Status::Terminated,
+            _ if ip > self.instructions.len() => Status::Failed,
+            _ => match self.hit_count[ip] {
+                i if i == 0 => Status::Executing,
                 _ => Status::InfiniteLoop,
-            }
-        };
+            },
+        }
     }
 
     fn run_current_instruction(&mut self) {
@@ -120,9 +141,28 @@ impl VirtualMachine {
                 self.ip += 1
             }
             Instruction::Jmp(n) => self.ip += n,
-            Instruction::Nop => self.ip += 1,
+            Instruction::Nop(_) => self.ip += 1,
         };
     }
+
+    fn is_ok(&self) -> bool {
+        match self.status {
+            Status::InfiniteLoop => false,
+            Status::Failed => false,
+            _ => true,
+        }
+    }
+}
+
+fn swap_instruction(mut tape: Tape, i: usize) -> Tape {
+    use Instruction::*;
+    tape[i] = match tape[i] {
+        Jmp(n) => Nop(n),
+        Nop(n) => Jmp(n),
+        Acc(n) => Acc(n),
+    };
+
+    tape
 }
 
 #[cfg(test)]
@@ -133,7 +173,7 @@ mod tests {
     fn test_instruction_parse() {
         use Instruction::*;
         let inputs = vec![
-            ("nop +0", Nop),
+            ("nop +0", Nop(0)),
             ("acc +1", Acc(1)),
             ("jmp +4", Jmp(4)),
             ("acc +3", Acc(3)),
