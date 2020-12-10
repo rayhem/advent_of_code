@@ -12,14 +12,14 @@ impl Solution for Day07 {
         let mut count = 0;
 
         'bags: for children in luggage.values() {
-            let mut to_check = children.clone();
+            let mut to_check = vec![children];
             while !to_check.is_empty() {
-                if let Some((_, child)) = to_check.pop() {
-                    if child == *"shiny gold" {
+                for (_, child) in to_check.pop().unwrap() {
+                    if *child == *"shiny gold" {
                         count += 1;
                         continue 'bags;
                     } else {
-                        to_check.append(&mut luggage[&child].clone());
+                        to_check.push(&luggage[child]);
                     }
                 }
             }
