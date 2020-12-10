@@ -20,12 +20,16 @@ impl Solution for Day09 {
         let mut range_sum = 0;
 
         while range_sum != target_number {
-            if range_sum < target_number {
-                tail += 1;
-                range_sum += numbers[tail];
-            } else if range_sum > target_number {
-                head += 1;
-                range_sum -= numbers[head];
+            match range_sum.cmp(&target_number) {
+                std::cmp::Ordering::Less => {
+                    tail += 1;
+                    range_sum += numbers[tail];
+                }
+                std::cmp::Ordering::Greater => {
+                    head += 1;
+                    range_sum -= numbers[head];
+                }
+                std::cmp::Ordering::Equal => {}
             }
         }
 
@@ -44,12 +48,11 @@ fn incorrect_number(numbers: &[i64], window_size: usize) -> Option<i64> {
         .iter()
         .skip(window_size)
         .zip(numbers.windows(window_size))
-        .filter(|(n, window)| {
+        .find(|(n, window)| {
             sums.clear();
             sums.extend(window.iter().tuple_combinations().map(|(a, b)| a + b));
             !sums.contains(n)
         })
-        .next()
         .map(|(a, _)| *a)
 }
 
