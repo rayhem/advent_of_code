@@ -60,8 +60,3 @@ fn parse_contents(s: &str) -> (String, Vec<(i32, String)>) {
 
     (left.to_string(), contents)
 }
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-}

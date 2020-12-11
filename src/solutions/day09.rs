@@ -55,11 +55,3 @@ fn incorrect_number(numbers: &[i64], window_size: usize) -> Option<i64> {
         })
         .map(|(a, _)| *a)
 }
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    #[test]
-    fn test_example() {}
-}
