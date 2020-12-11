@@ -1,4 +1,4 @@
-use crate::solutions::{Error, Solution};
+use crate::solutions::Solution;
 use itertools::Itertools;
 use std::str::FromStr;
 
@@ -82,13 +82,12 @@ impl GridSimulation {
         for (row, col) in (0..self.bounds.0).cartesian_product(0..self.bounds.1) {
             match self.grid[row as usize][col as usize] {
                 GridState::Floor => {}
-                GridState::Empty => match self.num_occupied_neighbors((row, col)) {
-                    0 => {
+                GridState::Empty => {
+                    if let 0 = self.num_occupied_neighbors((row, col)) {
                         tmp[row as usize][col as usize] = GridState::Occupied;
                         continue_sim = true;
                     }
-                    _ => {}
-                },
+                }
                 GridState::Occupied => match self.num_occupied_neighbors((row, col)) {
                     n if (n >= 4) => {
                         tmp[row as usize][col as usize] = GridState::Empty;
@@ -138,7 +137,7 @@ impl GridSimulation {
 
     fn num_occupied(&self) -> i32 {
         (&self.grid)
-            .into_iter()
+            .iter()
             .flatten()
             .map(|s| match s {
                 GridState::Occupied => 1,
