@@ -31,7 +31,7 @@ impl Solution for Day10 {
     }
 }
 
-fn count_paths(joltages: &Vec<i32>) -> HashMap<i32, i64> {
+fn count_paths(joltages: &[i32]) -> HashMap<i32, i64> {
     let mut paths = HashMap::new();
     paths.insert(0, 1);
 
@@ -47,7 +47,7 @@ fn count_paths(joltages: &Vec<i32>) -> HashMap<i32, i64> {
 
 fn parse_input(input: &str) -> Vec<i32> {
     let mut numbers: Vec<i32> = input.lines().map(|l| l.parse::<i32>().unwrap()).collect();
-    numbers.sort();
+    numbers.sort_unstable();
 
     numbers
 }
