@@ -18,3 +18,8 @@ pub trait Solution {
         vec![self.part_one(input), self.part_two(input)]
     }
 }
+
+#[derive(Clone, Copy, Debug)]
+pub enum Error {
+    BadInput,
+}
