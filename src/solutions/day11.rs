@@ -6,18 +6,22 @@ pub struct Day11 {}
 
 impl Solution for Day11 {
     fn part_one(&self, input: &str) -> Option<String> {
-        let mut sim = GridSimulation::from(input);
-
-        while sim.state != SimulationState::Finished {
-            sim.step()
-        }
-
-        Some(sim.num_occupied().to_string())
+        Some(run_simulation(input, 4, Some(1)).to_string())
     }
 
-    fn part_two(&self, _input: &str) -> Option<String> {
-        None
+    fn part_two(&self, input: &str) -> Option<String> {
+        Some(run_simulation(input, 5, None).to_string())
     }
+}
+
+fn run_simulation(input: &str, neighbor_threshold: i32, neighbor_radius: Option<i32>) -> i32 {
+    let mut sim = GridSimulation::new(input, neighbor_threshold);
+
+    while sim.state != SimulationState::Finished {
+        sim.step(neighbor_radius);
+    }
+
+    sim.num_occupied()
 }
 
 type Grid = Vec<Vec<GridState>>;
@@ -48,15 +52,16 @@ enum SimulationState {
     Finished,
 }
 
-#[derive(Clone, Debug, PartialEq)]
+#[derive(Clone)]
 struct GridSimulation {
     grid: Grid,
     bounds: (i32, i32),
     state: SimulationState,
+    neighbor_threshold: i32,
 }
 
-impl From<&str> for GridSimulation {
-    fn from(s: &str) -> Self {
+impl GridSimulation {
+    fn new(s: &str, neighbor_threshold: i32) -> Self {
         let g: Grid = s
             .lines()
             .map(|line| {
@@ -70,12 +75,11 @@ impl From<&str> for GridSimulation {
             bounds: (g.len() as i32, g[0].len() as i32),
             grid: g,
             state: SimulationState::NotStarted,
+            neighbor_threshold,
         }
     }
-}
 
-impl GridSimulation {
-    fn step(&mut self) {
+    fn step(&mut self, neighbor_radius: Option<i32>) {
         let mut tmp = self.grid.clone();
 
         let mut continue_sim = false;
@@ -83,18 +87,20 @@ impl GridSimulation {
             match self.grid[row as usize][col as usize] {
                 GridState::Floor => {}
                 GridState::Empty => {
-                    if let 0 = self.num_occupied_neighbors((row, col)) {
+                    if let 0 = self.num_occupied_neighbors((row, col), neighbor_radius) {
                         tmp[row as usize][col as usize] = GridState::Occupied;
                         continue_sim = true;
                     }
                 }
-                GridState::Occupied => match self.num_occupied_neighbors((row, col)) {
-                    n if (n >= 4) => {
-                        tmp[row as usize][col as usize] = GridState::Empty;
-                        continue_sim = true;
+                GridState::Occupied => {
+                    match self.num_occupied_neighbors((row, col), neighbor_radius) {
+                        n if (n >= self.neighbor_threshold) => {
+                            tmp[row as usize][col as usize] = GridState::Empty;
+                            continue_sim = true;
+                        }
+                        _ => {}
                     }
-                    _ => {}
-                },
+                }
             }
         }
 
@@ -107,7 +113,7 @@ impl GridSimulation {
         };
     }
 
-    fn num_occupied_neighbors(&self, (row, col): (i32, i32)) -> i32 {
+    fn num_occupied_neighbors(&self, (row, col): (i32, i32), max_distance: Option<i32>) -> i32 {
         let mut neighbors = 0;
 
         let steps = [-1, 0, 1];
@@ -116,19 +122,33 @@ impl GridSimulation {
                 continue;
             }
 
-            let neighbor_row = row + dr;
-            if neighbor_row < 0 || neighbor_row >= self.bounds.0 as i32 {
-                continue;
-            }
+            let mut count = 1;
+            let mut radius = 1;
 
-            let neighbor_col = col + dc;
-            if neighbor_col < 0 || neighbor_col >= self.bounds.1 as i32 {
-                continue;
-            }
+            while max_distance.map(|d| radius <= d).unwrap_or(true) {
+                let neighbor_row = row + count * dr;
+                if neighbor_row < 0 || neighbor_row >= self.bounds.0 as i32 {
+                    break;
+                }
 
-            match self.grid[neighbor_row as usize][neighbor_col as usize] {
-                GridState::Floor | GridState::Empty => {}
-                GridState::Occupied => neighbors += 1,
+                let neighbor_col = col + count * dc;
+                if neighbor_col < 0 || neighbor_col >= self.bounds.1 as i32 {
+                    break;
+                }
+
+                match self.grid[neighbor_row as usize][neighbor_col as usize] {
+                    GridState::Floor => {}
+                    GridState::Empty => {
+                        break;
+                    }
+                    GridState::Occupied => {
+                        neighbors += 1;
+                        break;
+                    }
+                }
+
+                count += 1;
+                radius += 1;
             }
         }
 
