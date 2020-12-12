@@ -46,10 +46,7 @@ impl From<i32> for Heading {
 
 #[derive(Clone, Copy, Debug)]
 enum Maneuver {
-    North(i32),
-    East(i32),
-    South(i32),
-    West(i32),
+    Move(Heading, i32),
     Rotate(i32),
     Forward(i32),
 }
@@ -62,10 +59,10 @@ impl FromStr for Maneuver {
         let direction = chars.next().ok_or(solutions::Error::BadInput)?;
         let value = chars.as_str().parse()?;
         match direction {
-            'N' => Ok(Self::North(value)),
-            'E' => Ok(Self::East(value)),
-            'S' => Ok(Self::South(value)),
-            'W' => Ok(Self::West(value)),
+            'N' => Ok(Self::Move(Heading::North, value)),
+            'E' => Ok(Self::Move(Heading::East, value)),
+            'S' => Ok(Self::Move(Heading::South, value)),
+            'W' => Ok(Self::Move(Heading::West, value)),
             'L' => Ok(Self::Rotate(value / 90)),
             'R' => Ok(Self::Rotate(-value / 90)),
             'F' => Ok(Self::Forward(value)),
@@ -90,25 +87,25 @@ impl Ship {
 
     fn maneuver(&mut self, maneuver: &Maneuver) {
         use Maneuver::*;
-        match maneuver {
-            North(d) => self.location.1 += d,
-            East(d) => self.location.0 += d,
-            South(d) => self.location.1 -= d,
-            West(d) => self.location.0 -= d,
+        match *maneuver {
+            Move(heading, d) => self.move_along_by(heading, d),
             Rotate(r) => self.heading = ((self.heading as i32 + r + 4) % 4).into(),
-            Forward(d) => match self.heading {
-                Heading::East => self.location.0 += d,
-                Heading::West => self.location.0 -= d,
-                Heading::North => self.location.1 += d,
-                Heading::South => self.location.1 -= d,
-            },
+            Forward(d) => self.move_along_by(self.heading, d),
+        }
+    }
+
+    fn move_along_by(&mut self, heading: Heading, distance: i32) {
+        match heading {
+            Heading::East => self.location.0 += distance,
+            Heading::West => self.location.0 -= distance,
+            Heading::North => self.location.1 += distance,
+            Heading::South => self.location.1 -= distance,
         }
     }
 
     fn sail(&mut self, maneuvers: &[Maneuver]) {
         for maneuver in maneuvers {
             self.maneuver(maneuver);
-            println!("{:?}", &self);
         }
     }
 }
