@@ -34,5 +34,14 @@
 			"}$0",
 		],
 		"description": "Template for each day's solution"
+	},
+	"New enum": {
+		"scope": "",
+		"prefix": "enum",
+		"body": [
+			"#[derive(Clone, Copy, Debug)]",
+			"enum $1 {$0}",
+		],
+		"description": "Template for a new enum"
 	}
 }

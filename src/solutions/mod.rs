@@ -1,3 +1,5 @@
+use std::{char::ParseCharError, num::ParseIntError};
+
 pub mod day01;
 pub mod day02;
 pub mod day03;
@@ -23,4 +25,16 @@ pub trait Solution {
 #[derive(Clone, Copy, Debug)]
 pub enum Error {
     BadInput,
+}
+
+impl From<ParseCharError> for Error {
+    fn from(_: ParseCharError) -> Self {
+        Self::BadInput
+    }
+}
+
+impl From<ParseIntError> for Error {
+    fn from(_: ParseIntError) -> Self {
+        Self::BadInput
+    }
 }
