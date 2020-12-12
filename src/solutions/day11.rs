@@ -122,16 +122,15 @@ impl GridSimulation {
                 continue;
             }
 
-            let mut count = 1;
             let mut radius = 1;
 
             while max_distance.map(|d| radius <= d).unwrap_or(true) {
-                let neighbor_row = row + count * dr;
+                let neighbor_row = row + radius * dr;
                 if neighbor_row < 0 || neighbor_row >= self.bounds.0 as i32 {
                     break;
                 }
 
-                let neighbor_col = col + count * dc;
+                let neighbor_col = col + radius * dc;
                 if neighbor_col < 0 || neighbor_col >= self.bounds.1 as i32 {
                     break;
                 }
@@ -147,7 +146,6 @@ impl GridSimulation {
                     }
                 }
 
-                count += 1;
                 radius += 1;
             }
         }
