@@ -1,4 +1,4 @@
-use crate::solutions::{self, Solution};
+use crate::solutions::*;
 use std::str::FromStr;
 
 pub struct Day12 {}
@@ -63,11 +63,11 @@ enum Maneuver {
 }
 
 impl FromStr for Maneuver {
-    type Err = solutions::Error;
+    type Err = AdventError;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         let mut chars = s.chars();
-        let direction = chars.next().ok_or(solutions::Error::BadInput)?;
+        let direction = chars.next().ok_or(AdventError::BadInput)?;
         let value = chars.as_str().parse()?;
         match direction {
             'N' => Ok(Self::Move(Heading::North, value)),
@@ -77,7 +77,7 @@ impl FromStr for Maneuver {
             'L' => Ok(Self::Rotate(value / 90)),
             'R' => Ok(Self::Rotate(-value / 90)),
             'F' => Ok(Self::Forward(value)),
-            _ => Err(solutions::Error::BadInput),
+            _ => Err(AdventError::BadInput),
         }
     }
 }

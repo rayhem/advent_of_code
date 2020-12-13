@@ -1,4 +1,4 @@
-use crate::solutions::Solution;
+use crate::solutions::*;
 use itertools::Itertools;
 use std::str::FromStr;
 
@@ -34,13 +34,13 @@ enum GridState {
 }
 
 impl FromStr for GridState {
-    type Err = crate::Error;
-    fn from_str(s: &str) -> Result<Self, crate::Error> {
+    type Err = AdventError;
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
         match s {
             "L" => Ok(GridState::Empty),
             "#" => Ok(GridState::Occupied),
             "." => Ok(GridState::Floor),
-            _ => Err(crate::Error::BadInput),
+            _ => Err(AdventError::BadInput),
         }
     }
 }

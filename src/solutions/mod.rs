@@ -24,17 +24,17 @@ pub trait Solution {
 }
 
 #[derive(Clone, Copy, Debug)]
-pub enum Error {
+pub enum AdventError {
     BadInput,
 }
 
-impl From<ParseCharError> for Error {
+impl From<ParseCharError> for AdventError {
     fn from(_: ParseCharError) -> Self {
         Self::BadInput
     }
 }
 
-impl From<ParseIntError> for Error {
+impl From<ParseIntError> for AdventError {
     fn from(_: ParseIntError) -> Self {
         Self::BadInput
     }
