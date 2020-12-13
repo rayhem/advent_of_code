@@ -88,18 +88,9 @@ impl Ship {
     fn maneuver(&mut self, maneuver: &Maneuver) {
         use Maneuver::*;
         match *maneuver {
-            Move(heading, d) => self.move_along_by(heading, d),
+            Move(heading, d) => move_by(&mut self.location, heading, d),
             Rotate(r) => self.heading = ((self.heading as i32 + r + 4) % 4).into(),
-            Forward(d) => self.move_along_by(self.heading, d),
-        }
-    }
-
-    fn move_along_by(&mut self, heading: Heading, distance: i32) {
-        match heading {
-            Heading::East => self.location.0 += distance,
-            Heading::West => self.location.0 -= distance,
-            Heading::North => self.location.1 += distance,
-            Heading::South => self.location.1 -= distance,
+            Forward(d) => move_by(&mut self.location, self.heading, d),
         }
     }
 
@@ -107,5 +98,28 @@ impl Ship {
         for maneuver in maneuvers {
             self.maneuver(maneuver);
         }
+    }
+}
+
+fn move_by((ref mut x, ref mut y): &mut (i32, i32), heading: Heading, distance: i32) {
+    match heading {
+        Heading::East => *x += distance,
+        Heading::West => *x -= distance,
+        Heading::North => *y += distance,
+        Heading::South => *y -= distance,
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    const INPUT: &str =
+        include_str!("/home/connor/Documents/code/advent/advent2020/inputs/day12.txt");
+
+    #[test]
+    fn validate_part1() {
+        let day12 = Day12 {};
+        assert_eq!(day12.part_one(INPUT), Some(String::from("381")));
     }
 }
