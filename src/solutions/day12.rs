@@ -117,7 +117,7 @@ impl Ship {
             Rotate(r) => match &mut self.movement_mode {
                 MovementMode::Ship(heading) => *heading = ((*heading as i32 + r + 4) % 4).into(),
                 MovementMode::Waypoint(waypoint) => {
-                    let tmp = waypoint.clone();
+                    let tmp = *waypoint;
                     match (r + 4) % 4 {
                         0 => {}
                         1 => {
