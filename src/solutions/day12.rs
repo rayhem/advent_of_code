@@ -5,20 +5,20 @@ pub struct Day12 {}
 
 impl Solution for Day12 {
     fn part_one(&self, input: &str) -> Option<String> {
-        Some(set_sail(input).to_string())
+        Some(set_sail(input, MovementMode::Ship(Heading::East)).to_string())
     }
 
-    fn part_two(&self, _input: &str) -> Option<String> {
-        None
+    fn part_two(&self, input: &str) -> Option<String> {
+        Some(set_sail(input, MovementMode::Waypoint((10, 1))).to_string())
     }
 }
 
-fn set_sail(input: &str) -> i32 {
+fn set_sail(input: &str, movement_mode: MovementMode) -> i32 {
     let maneuvers: Vec<_> = input
         .lines()
         .map(|line| Maneuver::from_str(line).unwrap())
         .collect();
-    let mut ship = Ship::new();
+    let mut ship = Ship::new(movement_mode);
     ship.sail(&maneuvers);
 
     ship.location.0.abs() + ship.location.1.abs()
@@ -30,6 +30,17 @@ enum Heading {
     North,
     West,
     South,
+}
+
+impl Into<Point> for Heading {
+    fn into(self) -> Point {
+        match self {
+            Heading::East => (1, 0),
+            Heading::North => (0, 1),
+            Heading::West => (-1, 0),
+            Heading::South => (0, -1),
+        }
+    }
 }
 
 impl From<i32> for Heading {
@@ -71,26 +82,64 @@ impl FromStr for Maneuver {
     }
 }
 
+type Point = (i32, i32);
+#[derive(Clone, Copy, Debug)]
+enum MovementMode {
+    Ship(Heading),
+    Waypoint(Point),
+}
+
 #[derive(Clone, Copy, Debug)]
 struct Ship {
-    location: (i32, i32),
-    heading: Heading,
+    location: Point,
+    movement_mode: MovementMode,
 }
 
 impl Ship {
-    fn new() -> Self {
+    fn new(movement_mode: MovementMode) -> Self {
         Ship {
             location: (0, 0),
-            heading: Heading::East,
+            movement_mode,
         }
     }
 
     fn maneuver(&mut self, maneuver: &Maneuver) {
         use Maneuver::*;
         match *maneuver {
-            Move(heading, d) => move_by(&mut self.location, heading, d),
-            Rotate(r) => self.heading = ((self.heading as i32 + r + 4) % 4).into(),
-            Forward(d) => move_by(&mut self.location, self.heading, d),
+            Move(heading, d) => move_by(
+                match &mut self.movement_mode {
+                    MovementMode::Ship(_) => &mut self.location,
+                    MovementMode::Waypoint(waypoint) => waypoint,
+                },
+                heading.into(),
+                d,
+            ),
+            Rotate(r) => match &mut self.movement_mode {
+                MovementMode::Ship(heading) => *heading = ((*heading as i32 + r + 4) % 4).into(),
+                MovementMode::Waypoint(waypoint) => {
+                    let tmp = waypoint.clone();
+                    match (r + 4) % 4 {
+                        0 => {}
+                        1 => {
+                            waypoint.0 = -tmp.1;
+                            waypoint.1 = tmp.0;
+                        }
+                        2 => {
+                            waypoint.0 = -tmp.0;
+                            waypoint.1 = -tmp.1;
+                        }
+                        3 => {
+                            waypoint.0 = tmp.1;
+                            waypoint.1 = -tmp.0;
+                        }
+                        _ => {}
+                    }
+                }
+            },
+            Forward(d) => match self.movement_mode {
+                MovementMode::Ship(heading) => move_by(&mut self.location, heading.into(), d),
+                MovementMode::Waypoint(waypoint) => move_by(&mut self.location, waypoint, d),
+            },
         }
     }
 
@@ -101,25 +150,36 @@ impl Ship {
     }
 }
 
-fn move_by((ref mut x, ref mut y): &mut (i32, i32), heading: Heading, distance: i32) {
-    match heading {
-        Heading::East => *x += distance,
-        Heading::West => *x -= distance,
-        Heading::North => *y += distance,
-        Heading::South => *y -= distance,
-    }
+fn move_by((ref mut x, ref mut y): &mut (i32, i32), (dx, dy): Point, distance: i32) {
+    *x += dx * distance;
+    *y += dy * distance;
 }
 
 #[cfg(test)]
 mod tests {
     use super::*;
 
+    const EXAMPLE: &str = "F10\nN3\nF7\nR90\nF11";
     const INPUT: &str =
         include_str!("/home/connor/Documents/code/advent/advent2020/inputs/day12.txt");
 
     #[test]
-    fn validate_part1() {
-        let day12 = Day12 {};
-        assert_eq!(day12.part_one(INPUT), Some(String::from("381")));
+    fn example_part_one() {
+        assert_eq!(Day12 {}.part_one(EXAMPLE), Some(String::from("25")));
+    }
+
+    #[test]
+    fn example_part_two() {
+        assert_eq!(Day12 {}.part_two(EXAMPLE), Some(String::from("286")));
+    }
+
+    #[test]
+    fn baseline_part_one() {
+        assert_eq!(Day12 {}.part_one(INPUT), Some(String::from("381")));
+    }
+
+    #[test]
+    fn baseline_part_two() {
+        assert_eq!(Day12 {}.part_two(INPUT), Some(String::from("28591")));
     }
 }
