@@ -1,6 +1,4 @@
 use crate::solutions::*;
-use std::convert::TryInto;
-
 pub struct Day13 {}
 
 impl Solution for Day13 {
