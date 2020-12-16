@@ -14,27 +14,33 @@ impl Solution for Day15 {
         Some(game.sequence.iter().nth(2019).unwrap().to_string())
     }
 
-    fn part_two(&self, _input: &str) -> Option<String> {
-        None
+    fn part_two(&self, input: &str) -> Option<String> {
+        let mut game = MemoryGame::new(parse_input(input));
+
+        for _ in 0..30000000 {
+            game.take_turn();
+        }
+
+        Some(game.sequence.iter().nth(30000000 - 1).unwrap().to_string())
     }
 }
 
-fn parse_input(input: &str) -> Vec<i32> {
+fn parse_input(input: &str) -> Vec<usize> {
     input.split(',').filter_map(|n| n.parse().ok()).collect()
 }
 
 #[derive(Clone, Debug)]
 struct MemoryGame {
-    sequence: Vec<i32>,
-    history: HashMap<i32, i32>,
+    sequence: Vec<usize>,
+    history: HashMap<usize, usize>,
 }
 
 impl MemoryGame {
-    fn new(starting_numbers: Vec<i32>) -> Self {
+    fn new(starting_numbers: Vec<usize>) -> Self {
         let mut history: HashMap<_, _> = starting_numbers
             .iter()
             .enumerate()
-            .map(|(i, &n)| (n, i as i32))
+            .map(|(i, &n)| (n, i as usize))
             .collect();
         history.remove(starting_numbers.last().unwrap());
         MemoryGame {
@@ -44,8 +50,8 @@ impl MemoryGame {
     }
 
     fn take_turn(&mut self) {
-        let prev_turn = (self.sequence.len() as i32) - 1;
-        let prev = *self.sequence.last().unwrap() as i32;
+        let prev_turn = (self.sequence.len() as usize) - 1;
+        let prev = *self.sequence.last().unwrap() as usize;
 
         let next = match self.history.get(&prev) {
             None => 0,
