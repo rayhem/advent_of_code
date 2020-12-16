@@ -7,19 +7,15 @@ pub struct Day16 {}
 
 impl Solution for Day16 {
     fn part_one(&self, input: &str) -> Option<String> {
-        let (a, b, c) = parse_input(input).unwrap();
+        let (constraints, _, tickets) = parse_input(input).unwrap();
 
-        for c in a {
-            println!("{:?}", c)
-        }
-
-        println!("{:?}", b);
-
-        for t in c {
-            println!("{:?}", t)
-        }
-
-        None
+        Some(
+            tickets
+                .iter()
+                .map(|ticket| ticket.error_rate(&constraints))
+                .sum::<i32>()
+                .to_string(),
+        )
     }
 
     fn part_two(&self, _input: &str) -> Option<String> {
@@ -33,6 +29,7 @@ fn parse_input(input: &str) -> Result<(Vec<Constraint>, Ticket, Vec<Ticket>), Ad
     let constraints = parts
         .next()
         .ok_or(AdventError::BadInput)?
+        .trim()
         .lines()
         .filter_map(|line| line.parse().ok())
         .collect();
@@ -40,6 +37,7 @@ fn parse_input(input: &str) -> Result<(Vec<Constraint>, Ticket, Vec<Ticket>), Ad
     let my_ticket = parts
         .next()
         .ok_or(AdventError::BadInput)?
+        .trim()
         .lines()
         .last()
         .unwrap()
@@ -48,7 +46,9 @@ fn parse_input(input: &str) -> Result<(Vec<Constraint>, Ticket, Vec<Ticket>), Ad
     let tickets = parts
         .next()
         .ok_or(AdventError::BadInput)?
+        .trim()
         .lines()
+        .skip(1) // Skip "nearby tickets: "
         .filter_map(|line| line.parse().ok())
         .collect();
 
@@ -58,6 +58,19 @@ fn parse_input(input: &str) -> Result<(Vec<Constraint>, Ticket, Vec<Ticket>), Ad
 #[derive(Clone, Debug)]
 struct Ticket {
     values: Vec<i32>,
+}
+
+impl Ticket {
+    fn error_rate(&self, constraints: &Vec<Constraint>) -> i32 {
+        self.values
+            .iter()
+            .filter(|&&value| {
+                !constraints
+                    .iter()
+                    .any(|constraint| constraint.validate(value))
+            })
+            .sum()
+    }
 }
 
 impl FromStr for Ticket {
@@ -75,6 +88,12 @@ struct Range {
     high: i32,
 }
 
+impl Range {
+    fn contains(&self, value: i32) -> bool {
+        (self.low <= value) && (value <= self.high)
+    }
+}
+
 impl FromStr for Range {
     type Err = AdventError;
     fn from_str(s: &str) -> Result<Self, Self::Err> {
@@ -90,6 +109,12 @@ impl FromStr for Range {
 struct Constraint {
     name: String,
     ranges: (Range, Range),
+}
+
+impl Constraint {
+    fn validate(&self, value: i32) -> bool {
+        self.ranges.0.contains(value) || self.ranges.1.contains(value)
+    }
 }
 
 impl FromStr for Constraint {
