@@ -1,7 +1,9 @@
-use crate::solutions::Solution;
-use std::str::FromStr;
-
 use super::AdventError;
+use crate::solutions::Solution;
+use std::{
+    collections::{HashMap, HashSet},
+    str::FromStr,
+};
 
 pub struct Day16 {}
 
@@ -12,15 +14,81 @@ impl Solution for Day16 {
         Some(
             tickets
                 .iter()
-                .map(|ticket| ticket.error_rate(&constraints))
+                .map(|ticket| match ticket.status(&constraints) {
+                    TicketState::Invalid(n) => n,
+                    TicketState::Valid => 0,
+                })
                 .sum::<i32>()
                 .to_string(),
         )
     }
 
-    fn part_two(&self, _input: &str) -> Option<String> {
-        None
+    fn part_two(&self, input: &str) -> Option<String> {
+        let (constraints, my_ticket, tickets) = parse_input(input).unwrap();
+
+        let tickets: Vec<Ticket> = tickets
+            .into_iter()
+            .filter(|ticket| ticket.status(&constraints).into())
+            .collect();
+
+        assert!(tickets
+            .iter()
+            .all(|ticket| ticket.values.len() == tickets[0].values.len()));
+
+        let fields = associated_fields(&mut potential_fields(&tickets, &constraints));
+
+        Some(
+            fields
+                .iter()
+                .filter(|(name, _)| name.starts_with("departure"))
+                .map(|(_, &i)| my_ticket.values[i] as usize)
+                .product::<usize>()
+                .to_string(),
+        )
     }
+}
+
+fn potential_fields(
+    tickets: &[Ticket],
+    constraints: &[Constraint],
+) -> Vec<(String, HashSet<usize>)> {
+    let mut valid_fields = HashMap::new();
+    for field_idx in 0..tickets[0].values.len() {
+        for constraint in constraints {
+            if tickets
+                .iter()
+                .all(|ticket| constraint.validate(ticket.values[field_idx]))
+            {
+                let entry = valid_fields
+                    .entry(constraint.name.to_string())
+                    .or_insert_with(HashSet::new);
+                entry.insert(field_idx);
+            }
+        }
+    }
+
+    valid_fields.into_iter().collect()
+}
+
+fn associated_fields(fields: &mut Vec<(String, HashSet<usize>)>) -> HashMap<String, usize> {
+    fields.sort_by(|(_, first), (_, second)| second.len().cmp(&first.len()));
+
+    let n = fields.len();
+
+    let mut deduced_fields = HashMap::new();
+    for i in 0..(n - 1) {
+        deduced_fields.insert(
+            fields[i].0.clone(),
+            *fields[i].1.difference(&fields[i + 1].1).next().unwrap(),
+        );
+    }
+
+    deduced_fields.insert(
+        fields[n - 1].0.clone(),
+        fields[n - 1].1.drain().next().unwrap(),
+    );
+
+    deduced_fields
 }
 
 fn parse_input(input: &str) -> Result<(Vec<Constraint>, Ticket, Vec<Ticket>), AdventError> {
@@ -60,9 +128,25 @@ struct Ticket {
     values: Vec<i32>,
 }
 
+#[derive(Clone, Copy, Debug)]
+enum TicketState {
+    Valid,
+    Invalid(i32),
+}
+
+impl From<TicketState> for bool {
+    fn from(ticket_state: TicketState) -> Self {
+        match ticket_state {
+            TicketState::Valid => true,
+            TicketState::Invalid(_) => false,
+        }
+    }
+}
+
 impl Ticket {
-    fn error_rate(&self, constraints: &Vec<Constraint>) -> i32 {
-        self.values
+    fn status(&self, constraints: &[Constraint]) -> TicketState {
+        match self
+            .values
             .iter()
             .filter(|&&value| {
                 !constraints
@@ -70,6 +154,10 @@ impl Ticket {
                     .any(|constraint| constraint.validate(value))
             })
             .sum()
+        {
+            0 => TicketState::Valid,
+            error_rate => TicketState::Invalid(error_rate),
+        }
     }
 }
 
