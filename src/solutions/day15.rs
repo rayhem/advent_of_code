@@ -5,24 +5,22 @@ pub struct Day15 {}
 
 impl Solution for Day15 {
     fn part_one(&self, input: &str) -> Option<String> {
-        let mut game = MemoryGame::new(parse_input(input));
-
-        for _ in 0..2020 {
-            game.take_turn();
-        }
-
-        Some(game.sequence.iter().nth(2019).unwrap().to_string())
+        Some(sequence_at(input, 2020).to_string())
     }
 
     fn part_two(&self, input: &str) -> Option<String> {
-        let mut game = MemoryGame::new(parse_input(input));
-
-        for _ in 0..30000000 {
-            game.take_turn();
-        }
-
-        Some(game.sequence.iter().nth(30000000 - 1).unwrap().to_string())
+        Some(sequence_at(input, 30_000_000).to_string())
     }
+}
+
+fn sequence_at(input: &str, n: usize) -> usize {
+    let mut game = MemoryGame::new(parse_input(input));
+
+    for _ in 0..n {
+        game.take_turn();
+    }
+
+    *game.sequence.get(n - 1).unwrap()
 }
 
 fn parse_input(input: &str) -> Vec<usize> {

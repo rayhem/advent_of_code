@@ -18,7 +18,7 @@ fn main() {
         Some(Box::new(day12::Day12 {})),
         Some(Box::new(day13::Day13 {})),
         Some(Box::new(day14::Day14 {})),
-        None, //Some(Box::new(day15::Day15 {})),
+        Some(Box::new(day15::Day15 {})),
         Some(Box::new(day16::Day16 {})),
     ];
 
