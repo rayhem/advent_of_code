@@ -42,7 +42,7 @@ impl MemoryGame {
             .collect();
         history.remove(starting_numbers.last().unwrap());
         MemoryGame {
-            history: history,
+            history,
             sequence: starting_numbers,
         }
     }
