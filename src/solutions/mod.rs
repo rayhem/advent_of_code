@@ -2,6 +2,7 @@ use std::{char::ParseCharError, num::ParseIntError};
 
 pub mod day01;
 pub mod day02;
+pub mod day03;
 
 pub trait Solution {
     fn part_one(&self, input: &str) -> Option<String>;

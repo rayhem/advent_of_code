@@ -6,6 +6,7 @@ fn main() {
     let solutions: Vec<Option<Box<dyn Solution>>> = vec![
         Some(Box::new(day01::Day01 {})),
         Some(Box::new(day02::Day02 {})),
+        Some(Box::new(day03::Day03 {})),
     ];
 
     for (day, solution) in solutions.iter().enumerate() {
