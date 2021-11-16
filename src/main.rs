@@ -7,6 +7,7 @@ fn main() {
         Some(Box::new(day01::Day01 {})),
         Some(Box::new(day02::Day02 {})),
         Some(Box::new(day03::Day03 {})),
+        Some(Box::new(day04::Day04 {})),
     ];
 
     for (day, solution) in solutions.iter().enumerate() {

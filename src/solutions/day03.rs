@@ -1,4 +1,4 @@
-use std::{collections::HashSet, fmt::Error};
+use std::collections::HashSet;
 
 use crate::solutions::Solution;
 
