@@ -5,6 +5,7 @@ use std::time::Instant;
 fn main() {
     let solutions: Vec<Option<Box<dyn Solution>>> = vec![
         Some(Box::new(day01::Day01 {})),
+        Some(Box::new(day02::Day02 {})),
     ];
 
     for (day, solution) in solutions.iter().enumerate() {
