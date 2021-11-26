@@ -46,11 +46,11 @@ pub fn make_cli() -> ArgMatches<'static> {
                 .value_name("[1-25]"),
         )
         .arg(
-            Arg::with_name("root")
+            Arg::with_name("inputs")
                 .default_value("./inputs")
-                .help("Path to input files")
-                .long("root")
-                .short("r")
+                .help("Path to input files directory")
+                .long("inputs_dir")
+                .short("i")
                 .takes_value(true)
                 .validator(|dir| {
                     if std::path::Path::is_dir(std::path::Path::new(&dir)) {
