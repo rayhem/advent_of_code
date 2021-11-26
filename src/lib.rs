@@ -1,2 +1,2 @@
-mod cli;
+pub mod cli;
 use cli::*;
