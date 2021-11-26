@@ -47,6 +47,7 @@ pub fn make_cli() -> ArgMatches<'static> {
         )
         .arg(
             Arg::with_name("root")
+                .default_value("./inputs")
                 .help("Path to input files")
                 .long("root")
                 .short("r")
