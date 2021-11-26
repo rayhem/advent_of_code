@@ -1,6 +1,6 @@
 use md5;
 
-use crate::solutions::Solution;
+use advent_utils::solution::Solution;
 
 pub struct Day04 {}
 

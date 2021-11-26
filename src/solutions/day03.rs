@@ -1,6 +1,5 @@
+use advent_utils::solution::Solution;
 use std::collections::HashSet;
-
-use crate::solutions::Solution;
 
 pub struct Day03 {}
 

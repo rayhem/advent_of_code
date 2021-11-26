@@ -1,4 +1,4 @@
-use crate::solutions::Solution;
+use advent_utils::solution::Solution;
 use std::cmp::min;
 
 pub struct Day02 {}
