@@ -20,13 +20,11 @@ fn main() {
                 .unwrap_or_else(|_| panic!("File {} not found", fname));
             let now = Instant::now();
             println!(
-                "Day {0} ({2}): {1:?}",
+                "Day {0} ({2:>7}): {1:?}",
                 day,
                 solution.run(input.as_str()),
                 now.elapsed().as_micros()
             );
-        } else {
-            println!("Day {}: -- UNIMPLEMENTED --", day);
         }
     }
 }
