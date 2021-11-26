@@ -1,7 +1,7 @@
 pub mod cli;
 pub mod solution;
 
-mod advent_utils {
+pub mod advent_utils {
     pub fn execute_with_timing<P: std::fmt::Debug + std::convert::AsRef<std::path::Path>>(
         day: i32,
         input_file: &P,
