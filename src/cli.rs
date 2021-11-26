@@ -61,22 +61,22 @@ fn get_day_specifiers_from_cli(matches: &ArgMatches) -> Vec<DaySpecifier> {
 pub fn get_cli_days(matches: &ArgMatches) -> Vec<i32> {
     let day_specifiers = get_day_specifiers_from_cli(matches);
 
-    let mut daySet: HashSet<i32> = HashSet::new();
+    let mut days: HashSet<i32> = HashSet::new();
     for specifier in day_specifiers.into_iter() {
         match specifier {
             DaySpecifier::Single(n) => {
-                daySet.insert(n);
+                days.insert(n);
             }
             DaySpecifier::Range(lbound, ubound) => {
                 for i in lbound..=ubound {
-                    daySet.insert(i);
+                    days.insert(i);
                 }
             }
         }
     }
 
-    let mut v = daySet.into_iter().collect::<Vec<_>>();
-    v.sort();
+    let mut v = days.into_iter().collect::<Vec<_>>();
+    v.sort_unstable();
 
     v
 }
