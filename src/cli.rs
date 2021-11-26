@@ -45,6 +45,21 @@ pub fn make_cli() -> ArgMatches<'static> {
                 .validator(validate_day_specifier)
                 .value_name("[1-25]"),
         )
+        .arg(
+            Arg::with_name("root")
+                .help("Path to input files")
+                .long("root")
+                .short("r")
+                .takes_value(true)
+                .validator(|dir| {
+                    if std::path::Path::is_dir(std::path::Path::new(&dir)) {
+                        Ok(())
+                    } else {
+                        Err("Input directory does not exist".to_string())
+                    }
+                })
+                .value_name("PATH"),
+        )
         .get_matches()
 }
 
