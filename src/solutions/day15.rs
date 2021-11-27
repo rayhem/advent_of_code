@@ -1,4 +1,4 @@
-use std::{cmp::max, collections::HashMap, str::FromStr};
+use std::{cmp::max, str::FromStr};
 
 use advent_utils::solution::Solution;
 
@@ -12,35 +12,15 @@ impl Solution for Day15 {
         for i in 0..=100 {
             for j in 0..=100 {
                 for k in 0..=(101 - i - j) {
-                    let l = 100 - (i + j + k);
+                    let coef = [i, j, k, 100 - (i + j + k)];
+                    let pairs = coef.iter().zip(ingredients.iter());
 
                     max_score = max(
                         max_score,
-                        max(
-                            0,
-                            i * ingredients[0].capacity
-                                + j * ingredients[1].capacity
-                                + k * ingredients[2].capacity
-                                + l * ingredients[3].capacity,
-                        ) * max(
-                            0,
-                            i * ingredients[0].durability
-                                + j * ingredients[1].durability
-                                + k * ingredients[2].durability
-                                + l * ingredients[3].durability,
-                        ) * max(
-                            0,
-                            i * ingredients[0].flavor
-                                + j * ingredients[1].flavor
-                                + k * ingredients[2].flavor
-                                + l * ingredients[3].flavor,
-                        ) * max(
-                            0,
-                            i * ingredients[0].texture
-                                + j * ingredients[1].texture
-                                + k * ingredients[2].texture
-                                + l * ingredients[3].texture,
-                        ),
+                        max(0, pairs.clone().map(|(a, b)| a * b.capacity).sum())
+                            * max(0, pairs.clone().map(|(a, b)| a * b.durability).sum())
+                            * max(0, pairs.clone().map(|(a, b)| a * b.flavor).sum())
+                            * max(0, pairs.map(|(a, b)| a * b.texture).sum()),
                     );
                 }
             }
@@ -56,41 +36,16 @@ impl Solution for Day15 {
         for i in 0..=100 {
             for j in 0..=100 {
                 for k in 0..=(101 - i - j) {
-                    let l = 100 - (i + j + k);
+                    let coef = [i, j, k, 100 - (i + j + k)];
+                    let pairs = coef.iter().zip(ingredients.iter());
 
-                    if i * ingredients[0].calories
-                        + j * ingredients[1].calories
-                        + k * ingredients[2].calories
-                        + l * ingredients[3].calories
-                        == 500
-                    {
+                    if pairs.clone().map(|(a, b)| a * b.calories).sum::<i32>() == 500 {
                         max_score = max(
                             max_score,
-                            max(
-                                0,
-                                i * ingredients[0].capacity
-                                    + j * ingredients[1].capacity
-                                    + k * ingredients[2].capacity
-                                    + l * ingredients[3].capacity,
-                            ) * max(
-                                0,
-                                i * ingredients[0].durability
-                                    + j * ingredients[1].durability
-                                    + k * ingredients[2].durability
-                                    + l * ingredients[3].durability,
-                            ) * max(
-                                0,
-                                i * ingredients[0].flavor
-                                    + j * ingredients[1].flavor
-                                    + k * ingredients[2].flavor
-                                    + l * ingredients[3].flavor,
-                            ) * max(
-                                0,
-                                i * ingredients[0].texture
-                                    + j * ingredients[1].texture
-                                    + k * ingredients[2].texture
-                                    + l * ingredients[3].texture,
-                            ),
+                            max(0, pairs.clone().map(|(a, b)| a * b.capacity).sum())
+                                * max(0, pairs.clone().map(|(a, b)| a * b.durability).sum())
+                                * max(0, pairs.clone().map(|(a, b)| a * b.flavor).sum())
+                                * max(0, pairs.map(|(a, b)| a * b.texture).sum()),
                         );
                     }
                 }
