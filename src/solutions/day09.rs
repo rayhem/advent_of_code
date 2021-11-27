@@ -1,15 +1,23 @@
+use itertools::Itertools;
+use std::collections::{HashMap, HashSet};
+
 use advent_utils::solution::Solution;
 
 pub struct Day09 {}
 
 impl Solution for Day09 {
     fn part_one(&self, input: &str) -> Option<String> {
-        distance_matrix(input);
-        todo!()
+        match distance_bounds(input) {
+            itertools::MinMaxResult::MinMax(a, _) => Some(a.to_string()),
+            _ => panic!(),
+        }
     }
 
-    fn part_two(&self, _input: &str) -> Option<String> {
-        todo!()
+    fn part_two(&self, input: &str) -> Option<String> {
+        match distance_bounds(input) {
+            itertools::MinMaxResult::MinMax(_, b) => Some(b.to_string()),
+            _ => panic!(),
+        }
     }
 }
 
@@ -26,19 +34,35 @@ impl<'a> TryFrom<&'a str> for LocationPair<'a> {
         let mut tokens = s.split_ascii_whitespace();
 
         Ok(LocationPair {
-            from: tokens.nth(0).ok_or("Length error")?,
+            from: tokens.next().ok_or("Length error")?,
             to: tokens.nth(1).ok_or("Length error")?,
-            distance: tokens
-                .clone()
-                .nth(1)
-                .ok_or("length error")?
-                .parse::<i32>()?,
+            distance: tokens.nth(1).ok_or("length error")?.parse::<i32>()?,
         })
     }
 }
 
-fn distance_matrix(_input: &str) -> () {
-    todo!()
+fn distance_bounds(input: &str) -> itertools::MinMaxResult<i32> {
+    let mut places: HashSet<&str> = HashSet::new();
+    let mut distances: HashMap<&str, HashMap<&str, i32>> = HashMap::new();
+
+    for LocationPair { from, to, distance } in input.lines().map(LocationPair::try_from).flatten() {
+        places.insert(from);
+        places.insert(to);
+
+        distances.entry(from).or_default().insert(to, distance);
+        distances.entry(to).or_default().insert(from, distance);
+    }
+
+    places
+        .iter()
+        .permutations(places.len())
+        .map(|v| {
+            v.iter()
+                .tuple_windows::<(_, _)>()
+                .map(|(&&a, &&b)| distances.get(a).unwrap().get(b).unwrap())
+                .sum::<i32>()
+        })
+        .minmax()
 }
 
 #[cfg(test)]

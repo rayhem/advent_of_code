@@ -1,6 +1,8 @@
+use advent_utils::solution::*;
+use lazy_static::__Deref;
+use std::collections::HashMap;
+
 mod solutions;
-use advent_utils::solution::Solution;
-use std::{collections::HashMap, time::Instant};
 
 fn main() {
     let cli = advent_utils::cli::make_cli();
@@ -12,18 +14,15 @@ fn main() {
     solutions.insert(4, Box::new(solutions::day04::Day04 {}));
     solutions.insert(5, Box::new(solutions::day05::Day05 {}));
     solutions.insert(6, Box::new(solutions::day06::Day06 {}));
+    solutions.insert(9, Box::new(solutions::day09::Day09 {}));
 
+    let root_dir = cli.value_of("inputs").unwrap();
     for day in advent_utils::cli::get_cli_days(&cli).into_iter() {
         if let Some(solution) = solutions.get(&day) {
-            let fname = format!("{}/day{:02}.txt", cli.value_of("root").unwrap(), day);
-            let input = std::fs::read_to_string(&fname)
-                .unwrap_or_else(|_| panic!("File {} not found", fname));
-            let now = Instant::now();
-            println!(
-                "Day {0} ({2:>7}): {1:?}",
+            execute_with_timing(
                 day,
-                solution.run(input.as_str()),
-                now.elapsed().as_micros()
+                &format!("{}/day{:02}.txt", root_dir, day),
+                solution.deref(),
             );
         }
     }
