@@ -16,28 +16,18 @@ impl Solution for Day14 {
     }
 
     fn part_two(&self, input: &str) -> Option<String> {
-        let distances = input
+        let reindeer = input
             .lines()
             .map(Reindeer::try_from)
             .flatten()
-            .map(|reindeer| {
-                (0..=MAX_TIME)
-                    .map(|t| reindeer.distance(t))
-                    .collect::<Vec<_>>()
-            })
             .collect::<Vec<_>>();
+        let mut scores = vec![0; reindeer.len()];
 
-        let mut scores = vec![0; distances.len()];
-        for t in 1..=MAX_TIME {
-            let max_distance_idx = distances
-                .iter()
-                .enumerate()
-                .max_by(|(_, r1), (_, r2)| r1[t as usize].cmp(&r2[t as usize]))
-                .map(|(index, _)| index)
-                .unwrap();
+        for time in 1..=MAX_TIME {
+            let max_distance = reindeer.iter().map(|r| r.distance(time)).max().unwrap();
 
-            for (i, d) in distances.iter().enumerate() {
-                if d[t as usize] == distances[max_distance_idx][t as usize] {
+            for (i, r) in reindeer.iter().enumerate() {
+                if r.distance(time) == max_distance {
                     scores[i] += 1;
                 }
             }
