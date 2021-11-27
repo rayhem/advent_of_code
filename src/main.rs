@@ -18,6 +18,7 @@ fn main() {
     solutions.insert(10, Box::new(solutions::day10::Day10 {}));
     solutions.insert(14, Box::new(solutions::day14::Day14 {}));
     solutions.insert(15, Box::new(solutions::day15::Day15 {}));
+    solutions.insert(16, Box::new(solutions::day16::Day16 {}));
 
     let root_dir = cli.value_of("inputs").unwrap();
     for day in advent_utils::cli::get_cli_days(&cli).into_iter() {
