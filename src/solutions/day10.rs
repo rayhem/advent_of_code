@@ -13,7 +13,7 @@ impl Solution for Day10 {
     }
 }
 
-fn look_and_say(s: &String) -> String {
+fn look_and_say(s: &str) -> String {
     s.chars()
         .dedup_with_count()
         .fold(String::new(), |s, (count, ch)| {
