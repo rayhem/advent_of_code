@@ -7,10 +7,9 @@ pub trait Solution {
     }
 }
 
-pub fn execute_with_timing<P, S>(day: i32, input_file: &P, solution: &S)
+pub fn execute_with_timing<P, S>(day: i32, input_file: &P, solution: &dyn Solution)
 where
     P: std::fmt::Debug + std::convert::AsRef<std::path::Path>,
-    S: Solution,
 {
     let input = std::fs::read_to_string(&input_file)
         .unwrap_or_else(|_| panic!("File {:?} not found", input_file));
