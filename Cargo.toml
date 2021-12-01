@@ -7,3 +7,4 @@ edition = "2021"
 
 [dependencies]
 advent_utils = { git = "https://github.com/cglosser/advent_utils", branch = "main" }
+itertools = "0.10"
