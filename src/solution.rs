@@ -7,7 +7,7 @@ pub trait Solution {
     }
 }
 
-pub fn execute_with_timing<P, S>(day: i32, input_file: &P, solution: &impl Solution)
+pub fn execute_with_timing<P, S>(day: i32, input_file: &P, solution: impl Solution)
 where
     P: std::fmt::Debug + std::convert::AsRef<std::path::Path>,
 {
