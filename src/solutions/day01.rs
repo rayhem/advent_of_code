@@ -19,14 +19,15 @@ fn parse_and_evaluate(input: &str, skip_size: usize) -> Option<String> {
     )
 }
 
-fn get_positive_deltas<T>(xs: T, skip_size: usize) -> i32
+fn get_positive_deltas<T, U>(xs: T, skip_size: usize) -> usize
 where
-    T: Iterator<Item = i32> + Clone,
+    T: Iterator<Item = U> + Clone,
+    U: PartialOrd,
 {
     xs.clone()
         .zip(xs.skip(skip_size))
         .filter(|(a, b)| b > a)
-        .count() as i32
+        .count()
 }
 
 #[cfg(test)]
