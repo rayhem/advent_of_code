@@ -4,13 +4,13 @@
 currentYear=$(date +%Y)
 year=$1
 if [[ "$year" -le "2015" ]] || [[ "$year" -gt "$currentYear" ]]; then
-    echo "Invalid year. Years must be between 2015 and $currentYear"
+    echo "Invalid year ($year). Years must be between 2015 and $currentYear" >&2
     exit 1
 fi
 
 day=$2
-if [[ "$day" -le "1" ]] || [[ "$day" -gt "25" ]]; then
-    echo "Invalid day. Days must be between 1 and 25"
+if [[ "$day" -lt "1" ]] || [[ "$day" -gt "25" ]]; then
+    echo "Invalid day ($day). Days must be between 1 and 25" >&2
     exit 1
 fi
 
