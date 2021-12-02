@@ -96,3 +96,22 @@ impl std::str::FromStr for SubCommand {
         }
     }
 }
+
+#[cfg(test)]
+mod test {
+    use super::*;
+    static DATA: &str = "forward 5\ndown 5\nforward 8\nup 3\ndown 8\nforward 2";
+
+    #[test]
+    fn pilot_algorithm() {
+        assert_eq!(pilot_to_final_destination(DATA, update_direction), 150);
+    }
+
+    #[test]
+    fn pilot_algorithm_with_aim() {
+        assert_eq!(
+            pilot_to_final_destination(DATA, update_direction_with_aim),
+            900
+        );
+    }
+}
