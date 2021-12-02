@@ -33,19 +33,22 @@ where
 #[cfg(test)]
 mod test {
     use super::*;
-    static DATA: [i32; 10] = [199, 200, 208, 210, 200, 207, 240, 269, 260, 263];
+    mod unit {
+        use super::*;
+        static DATA: [i32; 10] = [199, 200, 208, 210, 200, 207, 240, 269, 260, 263];
 
-    #[test]
-    fn adjacent_increase() {
-        assert_eq!(get_positive_deltas(DATA.into_iter(), 1), 7)
+        #[test]
+        fn adjacent_increase() {
+            assert_eq!(get_positive_deltas(DATA.into_iter(), 1), 7)
+        }
+
+        #[test]
+        fn three_element_increase() {
+            assert_eq!(get_positive_deltas(DATA.into_iter(), 3), 5)
+        }
     }
 
-    #[test]
-    fn three_element_increase() {
-        assert_eq!(get_positive_deltas(DATA.into_iter(), 3), 5)
-    }
-
-    mod submission {
+    mod integration {
         use super::*;
         const SOLUTION: Day01 = Day01 {};
         static INPUT: &str = include_str!(concat!(env!("CARGO_MANIFEST_DIR"), "/inputs/day01.dat"));

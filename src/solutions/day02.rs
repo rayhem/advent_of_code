@@ -1,6 +1,5 @@
-use std::str::FromStr;
-
 use advent_utils::solution::Solution;
+use std::str::FromStr;
 
 pub struct Day02 {}
 
@@ -100,33 +99,36 @@ impl std::str::FromStr for SubCommand {
 #[cfg(test)]
 mod test {
     use super::*;
-    static DATA: &str = "forward 5\ndown 5\nforward 8\nup 3\ndown 8\nforward 2";
+    mod unit {
+        use super::*;
+        static DATA: &str = "forward 5\ndown 5\nforward 8\nup 3\ndown 8\nforward 2";
 
-    #[test]
-    fn parse_sub_commands() {
-        use SubCommand::*;
-        assert_eq!(
-            DATA.lines()
-                .flat_map(SubCommand::from_str)
-                .collect::<Vec<_>>(),
-            vec![Forward(5), Down(5), Forward(8), Up(3), Down(8), Forward(2)]
-        )
+        #[test]
+        fn parse_sub_commands() {
+            use SubCommand::*;
+            assert_eq!(
+                DATA.lines()
+                    .flat_map(SubCommand::from_str)
+                    .collect::<Vec<_>>(),
+                vec![Forward(5), Down(5), Forward(8), Up(3), Down(8), Forward(2)]
+            )
+        }
+
+        #[test]
+        fn pilot_algorithm() {
+            assert_eq!(pilot_to_final_destination(DATA, update_sub_state), 150);
+        }
+
+        #[test]
+        fn pilot_algorithm_with_aim() {
+            assert_eq!(
+                pilot_to_final_destination(DATA, update_sub_state_with_aim),
+                900
+            );
+        }
     }
 
-    #[test]
-    fn pilot_algorithm() {
-        assert_eq!(pilot_to_final_destination(DATA, update_sub_state), 150);
-    }
-
-    #[test]
-    fn pilot_algorithm_with_aim() {
-        assert_eq!(
-            pilot_to_final_destination(DATA, update_sub_state_with_aim),
-            900
-        );
-    }
-
-    mod submission {
+    mod integration {
         use super::*;
         const SOLUTION: Day02 = Day02 {};
         static INPUT: &str = include_str!(concat!(env!("CARGO_MANIFEST_DIR"), "/inputs/day02.dat"));
