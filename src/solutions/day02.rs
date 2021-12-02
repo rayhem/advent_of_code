@@ -125,4 +125,20 @@ mod test {
             900
         );
     }
+
+    mod submission {
+        use super::*;
+        const SOLUTION: Day02 = Day02 {};
+        static INPUT: &str = include_str!(concat!(env!("CARGO_MANIFEST_DIR"), "/inputs/day02.dat"));
+
+        #[test]
+        fn part_one() {
+            assert_eq!(SOLUTION.part_one(INPUT), Some(String::from("1840243")));
+        }
+
+        #[test]
+        fn part_two() {
+            assert_eq!(SOLUTION.part_two(INPUT), Some(String::from("1727785422")));
+        }
+    }
 }

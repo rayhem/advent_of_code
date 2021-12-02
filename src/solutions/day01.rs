@@ -44,4 +44,20 @@ mod test {
     fn three_element_increase() {
         assert_eq!(get_positive_deltas(DATA.into_iter(), 3), 5)
     }
+
+    mod submission {
+        use super::*;
+        const SOLUTION: Day01 = Day01 {};
+        static INPUT: &str = include_str!(concat!(env!("CARGO_MANIFEST_DIR"), "/inputs/day01.dat"));
+
+        #[test]
+        fn part_one() {
+            assert_eq!(SOLUTION.part_one(INPUT), Some(String::from("1292")));
+        }
+
+        #[test]
+        fn part_two() {
+            assert_eq!(SOLUTION.part_two(INPUT), Some(String::from("1262")));
+        }
+    }
 }
