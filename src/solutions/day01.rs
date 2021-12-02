@@ -4,19 +4,16 @@ pub struct Day01 {}
 
 impl Solution for Day01 {
     fn part_one(&self, input: &str) -> Option<String> {
-        parse_and_evaluate(input, 1)
+        Some(parse_and_evaluate(input, 1).to_string())
     }
 
     fn part_two(&self, input: &str) -> Option<String> {
-        parse_and_evaluate(input, 3)
+        Some(parse_and_evaluate(input, 3).to_string())
     }
 }
 
-fn parse_and_evaluate(input: &str, skip_size: usize) -> Option<String> {
-    Some(
-        get_positive_deltas(input.lines().map(|l| l.parse::<i32>().unwrap()), skip_size)
-            .to_string(),
-    )
+fn parse_and_evaluate(input: &str, skip_size: usize) -> usize {
+    get_positive_deltas::<_, i32>(input.lines().map(|l| l.parse().unwrap()), skip_size)
 }
 
 fn get_positive_deltas<T, U>(xs: T, skip_size: usize) -> usize
