@@ -8,6 +8,7 @@ fn main() {
 
     let mut solutions: HashMap<i32, Box<dyn Solution>> = HashMap::new();
     solutions.insert(1, Box::new(solutions::day01::Day01 {}));
+    solutions.insert(2, Box::new(solutions::day02::Day02 {}));
 
     let root_dir = cli.value_of("inputs").unwrap();
     for day in advent_utils::cli::get_cli_days(&cli).into_iter() {
