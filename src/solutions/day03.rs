@@ -4,12 +4,13 @@ pub struct Day03 {}
 
 impl Solution for Day03 {
     fn part_one(&self, input: &str) -> Option<String> {
-        let (gamma_rate, epsilon_rate) = rates(&parse_input(input));
-        Some((gamma_rate * epsilon_rate).to_string())
+        let digits = most_common_digit(&parse_input(input));
+        Some((gamma_rate(&digits) * epsilon_rate(&digits)).to_string())
     }
 
-    fn part_two(&self, _input: &str) -> Option<String> {
-        None
+    fn part_two(&self, input: &str) -> Option<String> {
+        let numbers = parse_input(input);
+        Some((oxygen_generator_rating(numbers.clone()) * co2_scrubber_rating(numbers)).to_string())
     }
 }
 
@@ -19,8 +20,8 @@ fn parse_input(s: &str) -> Vec<Vec<i32>> {
         .collect()
 }
 
-fn rates(numbers: &[Vec<i32>]) -> (i32, i32) {
-    let frequencies = numbers
+fn most_common_digit(numbers: &[Vec<i32>]) -> Vec<i32> {
+    numbers
         .iter()
         .fold(vec![0; numbers[0].len()], |mut frequencies, digits| {
             frequencies
@@ -28,27 +29,68 @@ fn rates(numbers: &[Vec<i32>]) -> (i32, i32) {
                 .zip(digits.iter())
                 .for_each(|(frequency, digit)| *frequency += *digit);
             frequencies
-        });
+        })
+        .iter()
+        .map(
+            |frequency| match (2 * frequency).cmp(&(numbers.len() as i32)) {
+                std::cmp::Ordering::Equal => 1,
+                std::cmp::Ordering::Less => 0,
+                std::cmp::Ordering::Greater => 1,
+            },
+        )
+        .collect()
+}
 
-    let most_common_digit = frequencies.into_iter().map(|frequency| {
-        match (frequency as usize).cmp(&(numbers.len() / 2)) {
-            std::cmp::Ordering::Equal => unreachable!(),
-            std::cmp::Ordering::Less => 0,
-            std::cmp::Ordering::Greater => 1,
-        }
-    });
-
-    let gamma_rate = most_common_digit
-        .clone()
+fn gamma_rate(most_common_digits: &[i32]) -> i32 {
+    most_common_digits
+        .iter()
         .rev()
         .enumerate()
-        .fold(0, |a, (i, b)| a + b * 2_i32.pow(i.try_into().unwrap()));
+        .fold(0, |a, (i, b)| a + b * 2_i32.pow(i.try_into().unwrap()))
+}
 
-    let epsilon_rate = most_common_digit.rev().enumerate().fold(0, |a, (i, b)| {
-        a + (1 - b) * 2_i32.pow(i.try_into().unwrap())
-    });
+fn epsilon_rate(most_common_digits: &[i32]) -> i32 {
+    most_common_digits
+        .iter()
+        .rev()
+        .enumerate()
+        .fold(0, |a, (i, b)| {
+            a + (1 - b) * 2_i32.pow(i.try_into().unwrap())
+        })
+}
 
-    (gamma_rate, epsilon_rate)
+fn oxygen_generator_rating(mut numbers: Vec<Vec<i32>>) -> i32 {
+    let mut i = 0;
+    while numbers.len() > 1 {
+        let most_common_digits = most_common_digit(&numbers);
+        numbers.retain(|number| number[i] == most_common_digits[i]);
+        i += 1;
+    }
+
+    numbers
+        .pop()
+        .unwrap()
+        .iter()
+        .rev()
+        .enumerate()
+        .fold(0, |a, (i, b)| a + b * 2_i32.pow(i.try_into().unwrap()))
+}
+
+fn co2_scrubber_rating(mut numbers: Vec<Vec<i32>>) -> i32 {
+    let mut i = 0;
+    while numbers.len() > 1 {
+        let most_common_digits = most_common_digit(&numbers);
+        numbers.retain(|number| number[i] != most_common_digits[i]);
+        i += 1;
+    }
+
+    numbers
+        .pop()
+        .unwrap()
+        .iter()
+        .rev()
+        .enumerate()
+        .fold(0, |a, (i, b)| a + b * 2_i32.pow(i.try_into().unwrap()))
 }
 
 #[cfg(test)]
@@ -62,10 +104,16 @@ mod tests {
 
         #[test]
         fn example1() {
+            let numbers = most_common_digit(&parse_input(DATA));
+            assert_eq!(gamma_rate(&numbers), 22);
+            assert_eq!(epsilon_rate(&numbers), 9);
+        }
+
+        #[test]
+        fn example2() {
             let numbers = parse_input(DATA);
-            let (gamma_rate, epsilon_rate) = rates(&numbers);
-            assert_eq!(gamma_rate, 22);
-            assert_eq!(epsilon_rate, 9);
+            assert_eq!(co2_scrubber_rating(numbers.clone()), 10);
+            assert_eq!(oxygen_generator_rating(numbers), 23);
         }
     }
 
@@ -77,6 +125,11 @@ mod tests {
         #[test]
         fn part_one() {
             assert_eq!(SOLUTION.part_one(INPUT), Some(String::from("1540244")));
+        }
+
+        #[test]
+        fn part_two() {
+            assert_eq!(SOLUTION.part_two(INPUT), Some(String::from("4203981")));
         }
     }
 }
