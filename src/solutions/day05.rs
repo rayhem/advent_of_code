@@ -31,6 +31,21 @@ struct Point {
     y: i32,
 }
 
+impl FromStr for Point {
+    type Err = Box<dyn std::error::Error>;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        let (x_str, y_str) = s
+            .split_once(',')
+            .ok_or(format!("Malformed coordinate: {}", s))?;
+
+        Ok(Point {
+            x: x_str.parse()?,
+            y: y_str.parse()?,
+        })
+    }
+}
+
 #[derive(Clone, Copy, Debug)]
 struct Segment {
     start: Point,
@@ -63,25 +78,13 @@ impl FromStr for Segment {
     type Err = Box<dyn std::error::Error>;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
-        let (start_pt, end_pt) = s
+        let (start_str, end_str) = s
             .split_once(" -> ")
             .ok_or(format!("Malformed segment string: {}", s))?;
-        let (start_x, start_y) = start_pt
-            .split_once(',')
-            .ok_or(format!("Malformed starting point string: {}", start_pt))?;
-        let (end_x, end_y) = end_pt
-            .split_once(',')
-            .ok_or(format!("Malformed ending point string: {}", end_pt))?;
 
         Ok(Self {
-            start: Point {
-                x: start_x.parse()?,
-                y: start_y.parse()?,
-            },
-            end: Point {
-                x: end_x.parse()?,
-                y: end_y.parse()?,
-            },
+            start: start_str.parse()?,
+            end: end_str.parse()?,
         })
     }
 }
