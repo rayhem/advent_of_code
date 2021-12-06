@@ -14,15 +14,15 @@ impl Solution for Day06 {
 }
 
 fn parse_and_count_after_days(s: &str, n: i32) -> i64 {
-    s.parse::<FishCount>().unwrap().step_n(n).total()
+    s.parse::<FishSimulator>().unwrap().step_n(n).total()
 }
 
 #[derive(Clone, Copy, Debug, Default)]
-struct FishCount {
+struct FishSimulator {
     data: [i64; 9],
 }
 
-impl FishCount {
+impl FishSimulator {
     fn step(&mut self) -> &Self {
         self.data.rotate_left(1);
         self.data[6] += self.data[8];
@@ -42,7 +42,7 @@ impl FishCount {
     }
 }
 
-impl FromStr for FishCount {
+impl FromStr for FishSimulator {
     type Err = Box<dyn std::error::Error>;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
@@ -56,6 +56,7 @@ impl FromStr for FishCount {
     }
 }
 
+#[cfg(test)]
 mod tests {
     use super::*;
 
@@ -65,14 +66,18 @@ mod tests {
 
         #[test]
         fn example1() {
-            let fish = DATA.parse::<FishCount>().unwrap();
-            assert_eq!(fish.clone().step_n(18).total(), 26);
+            assert_eq!(
+                DATA.parse::<FishSimulator>().unwrap().step_n(18).total(),
+                26
+            );
         }
 
         #[test]
         fn example2() {
-            let fish = DATA.parse::<FishCount>().unwrap();
-            assert_eq!(fish.clone().step_n(18).total(), 26);
+            assert_eq!(
+                DATA.parse::<FishSimulator>().unwrap().step_n(80).total(),
+                5934
+            );
         }
     }
 
