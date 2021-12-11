@@ -17,32 +17,42 @@ impl Solution for Day09 {
 }
 
 #[derive(Clone, Copy, Debug)]
-enum Basin {
-    Value(i32),
+enum Site {
+    Unexamined(i32),
     Basin(i32, i32),
     Maximum,
 }
 
-impl<T> From<T> for Basin
+impl Site {
+    fn value(self) -> i32 {
+        match self {
+            Self::Unexamined(n) => n,
+            Self::Basin(n, _) => n,
+            Self::Maximum => 9,
+        }
+    }
+}
+
+impl<T> From<T> for Site
 where
     T: Deref<Target = i32>,
 {
     fn from(i: T) -> Self {
         match *i {
             9 => Self::Maximum,
-            n => Self::Value(n),
+            n => Self::Unexamined(n),
         }
     }
 }
 
 #[derive(Clone, Debug)]
 struct Grid {
-    data: Vec<i32>,
+    data: Vec<Site>,
     num_rows: usize,
     num_cols: usize,
 }
 
-impl<'a, 'b> Grid {
+impl Grid {
     fn coord_to_idx(&self, (r, c): (usize, usize)) -> usize {
         r * self.num_cols + c
     }
@@ -51,7 +61,7 @@ impl<'a, 'b> Grid {
         (idx / self.num_cols, idx % self.num_cols)
     }
 
-    fn adjacent_neighbors(&'a self, idx: usize) -> impl Iterator<Item = usize> + 'a {
+    fn adjacent_neighbors(&self, idx: usize) -> impl Iterator<Item = usize> + '_ {
         let (r, c) = self.idx_to_coord(idx);
 
         [
@@ -65,7 +75,7 @@ impl<'a, 'b> Grid {
         .map(|pair| self.coord_to_idx(pair))
     }
 
-    fn adjacent_values(&'a self, idx: usize) -> impl Iterator<Item = i32> + 'a {
+    fn adjacent_values(&self, idx: usize) -> impl Iterator<Item = Site> + '_ {
         self.adjacent_neighbors(idx).map(|i| self.data[i])
     }
 
@@ -73,45 +83,47 @@ impl<'a, 'b> Grid {
         self.data
             .iter()
             .enumerate()
-            .filter(|(i, value)| self.adjacent_values(*i).all(|n| **value < n))
-            .map(|(_, v)| 1 + v)
+            .filter(|(i, minimal_site)| {
+                self.adjacent_values(*i)
+                    .all(|site| minimal_site.value() < site.value())
+            })
+            .map(|(_, site)| 1 + site.value())
             .sum()
     }
 
-    fn neighbors(&'a self, idx: usize) -> impl Iterator<Item = usize> + 'a {
+    fn neighbors(&self, idx: usize) -> impl Iterator<Item = usize> + '_ {
         let mut queue: Vec<_> = vec![idx];
         let mut indices: HashSet<usize> = HashSet::new();
 
         while let Some(site) = queue.pop() {
             indices.insert(site);
-            queue.extend(
-                self.adjacent_neighbors(site)
-                    .filter(|neighbor| self.data[*neighbor] != 9 && !indices.contains(neighbor)),
-            )
+            queue.extend(self.adjacent_neighbors(site).filter(|neighbor| {
+                !matches!(self.data[*neighbor], Site::Maximum) && !indices.contains(neighbor)
+            }))
         }
 
         indices.into_iter()
     }
 
-    fn basin_size(&self) -> i32 {
-        let mut basins = self.data.iter().map(Basin::from).collect_vec();
-
+    fn basin_size(mut self) -> i32 {
         let mut idx: usize = 0;
         let mut basin_idx = 0;
         while idx < self.data.len() {
-            if let Basin::Value(n) = basins[idx] {
-                self.neighbors(idx)
-                    .for_each(|neighbor| basins[neighbor] = Basin::Basin(n, basin_idx));
+            if let Site::Unexamined(n) = self.data[idx] {
+                let neighbors = self.neighbors(idx).collect_vec();
+                neighbors
+                    .into_iter()
+                    .for_each(|neighbor| self.data[neighbor] = Site::Basin(n, basin_idx));
                 basin_idx += 1
             }
-
             idx += 1;
         }
 
-        let mut basin_sizes = basins
+        let mut basin_sizes = self
+            .data
             .into_iter()
             .filter_map(|b| {
-                if let Basin::Basin(_, basin_id) = b {
+                if let Site::Basin(_, basin_id) = b {
                     Some(basin_id)
                 } else {
                     None
@@ -136,9 +148,9 @@ impl FromStr for Grid {
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         Ok(Grid {
             data: s
+                .replace('\n', "")
                 .chars()
-                .flat_map(|c| c.to_digit(10))
-                .map(|c| c as i32)
+                .flat_map(|c| Site::try_from(&(c.to_digit(10).unwrap() as i32)))
                 .collect(),
             num_rows: s.lines().count(),
             num_cols: s.lines().next().ok_or("Invalid input")?.len(),
