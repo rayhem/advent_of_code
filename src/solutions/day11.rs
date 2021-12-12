@@ -80,13 +80,15 @@ impl OctopusGarden {
     fn update(&mut self) -> &Self {
         self.data.iter_mut().for_each(|val| *val += 1);
 
-        let mut stack: Vec<usize> = self
-            .data
-            .iter()
-            .enumerate()
-            .filter(|(_, &val)| val > 9)
-            .map(|(i, _)| i)
-            .collect();
+        let mut stack: Vec<usize> = Vec::new();
+        stack.reserve(self.num_rows * self.num_cols);
+        stack.extend(
+            self.data
+                .iter()
+                .enumerate()
+                .filter(|(_, &val)| val > 9)
+                .map(|(i, _)| i),
+        );
 
         let mut i = 0;
         while i != stack.len() {
