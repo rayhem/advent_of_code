@@ -13,13 +13,16 @@ impl Solution for Day08 {
 }
 
 fn count_unique_segments(s: &str) -> i32 {
+    const UNIQUE_SEGMENT_LENGTHS: [usize; 4] = [2, 4, 3, 7];
+    // 1 has 2 segments, 4 has 4 segments, 7 has 3 segments, 8 has 7 segments
+
     s.lines()
         .map(|line| line.split_once(" | ").unwrap())
         .map(|(_, output)| {
             output
                 .split_whitespace()
                 .map(|s| s.trim().len())
-                .filter(|&l| l == 2 || l == 4 || l == 3 || l == 7)
+                .filter(|l| UNIQUE_SEGMENT_LENGTHS.contains(l))
                 .count() as i32
         })
         .sum()
