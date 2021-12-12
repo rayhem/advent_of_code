@@ -1,13 +1,10 @@
-use std::str::FromStr;
-
 use advent_utils::solution::Solution;
-use itertools::Itertools;
 
 pub struct Day08 {}
 
 impl Solution for Day08 {
     fn part_one(&self, input: &str) -> Option<String> {
-        None
+        Some(count_unique_segments(input).to_string())
     }
 
     fn part_two(&self, _input: &str) -> Option<String> {
@@ -17,57 +14,15 @@ impl Solution for Day08 {
 
 fn count_unique_segments(s: &str) -> i32 {
     s.lines()
-        .map(|line| Display::from_str(line).unwrap())
-        .map(|display| {
-            display
-                .output_digits
-                .iter()
-                .filter(|i| [1, 4, 7, 8].contains(&i.len()))
-                .inspect(|s| println!("{}", s))
+        .map(|line| line.split_once(" | ").unwrap())
+        .map(|(_, output)| {
+            output
+                .split_whitespace()
+                .map(|s| s.trim().len())
+                .filter(|&l| l == 2 || l == 4 || l == 3 || l == 7)
                 .count() as i32
         })
-        .sum::<i32>()
-}
-
-enum Digit {
-    Zero,
-    One,
-    Two,
-    Three,
-    Four,
-    Five,
-    Six,
-    Seven,
-    Eight,
-    Nine,
-}
-
-impl FromStr for Digit {
-    type Err = Box<dyn std::error::Error>;
-
-    fn from_str(s: &str) -> Result<Self, Self::Err> {
-        todo!()
-    }
-}
-
-struct Display {
-    input_signals: Vec<String>,
-    output_digits: Vec<String>,
-}
-
-impl FromStr for Display {
-    type Err = Box<dyn std::error::Error>;
-
-    fn from_str(s: &str) -> Result<Self, Self::Err> {
-        let (input, digits) = s
-            .split_once(" | ")
-            .ok_or(format!("Malformed string: {}", s))?;
-
-        Ok(Display {
-            input_signals: input.split_whitespace().map(String::from).collect(),
-            output_digits: digits.split_whitespace().map(String::from).collect(),
-        })
-    }
+        .sum()
 }
 
 #[cfg(test)]
