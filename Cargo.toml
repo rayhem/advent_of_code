@@ -8,7 +8,7 @@ default-run = "2022"
 
 [lib]
 name = "utils"
-path = "src/utils.lib.rs"
+path = "src/utils/lib.rs"
 
 [[bin]]
 name = "2022"
