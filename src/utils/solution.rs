@@ -11,7 +11,7 @@ pub fn execute_with_timing<P>(day: i32, input_file: &P, solution: &Box<dyn Solut
 where
     P: std::fmt::Debug + std::convert::AsRef<std::path::Path>,
 {
-    let input = std::fs::read_to_string(&input_file)
+    let input = std::fs::read_to_string(input_file)
         .unwrap_or_else(|_| panic!("File {:?} not found", input_file));
 
     let now = std::time::Instant::now();

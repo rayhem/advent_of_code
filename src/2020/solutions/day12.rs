@@ -32,9 +32,9 @@ enum Heading {
     South,
 }
 
-impl Into<Point> for Heading {
-    fn into(self) -> Point {
-        match self {
+impl From<Heading> for Point {
+    fn from(heading: Heading) -> Self {
+        match heading {
             Heading::East => (1, 0),
             Heading::North => (0, 1),
             Heading::West => (-1, 0),

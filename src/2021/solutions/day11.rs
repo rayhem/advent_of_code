@@ -1,6 +1,6 @@
-use utils::solution::Solution;
 use itertools::Itertools;
 use std::str::FromStr;
+use utils::solution::Solution;
 
 pub struct Day11 {}
 
@@ -49,10 +49,10 @@ impl OctopusGarden {
         let (r, c) = self.idx_to_coord(idx);
 
         [
-            r.gt(&0).then(|| (r - 1, c)),
-            c.gt(&0).then(|| (r, c - 1)),
-            c.lt(&(self.num_cols - 1)).then(|| (r, c + 1)),
-            r.lt(&(self.num_rows - 1)).then(|| (r + 1, c)),
+            r.gt(&0).then_some((r - 1, c)),
+            c.gt(&0).then_some((r, c - 1)),
+            c.lt(&(self.num_cols - 1)).then_some((r, c + 1)),
+            r.lt(&(self.num_rows - 1)).then_some((r + 1, c)),
         ]
         .into_iter()
         .flatten()
@@ -62,10 +62,10 @@ impl OctopusGarden {
     fn diagonal_neighbors(&self, idx: usize) -> impl Iterator<Item = usize> + '_ + Clone {
         let (r, c) = self.idx_to_coord(idx);
         [
-            (r.gt(&0) && c.gt(&0)).then(|| (r - 1, c - 1)),
-            (r.gt(&0) && c.lt(&(self.num_cols - 1))).then(|| (r - 1, c + 1)),
-            (r.lt(&(self.num_rows - 1)) && c.gt(&0)).then(|| (r + 1, c - 1)),
-            (r.lt(&(self.num_rows - 1)) && c.lt(&(self.num_cols - 1))).then(|| (r + 1, c + 1)),
+            (r.gt(&0) && c.gt(&0)).then_some((r - 1, c - 1)),
+            (r.gt(&0) && c.lt(&(self.num_cols - 1))).then_some((r - 1, c + 1)),
+            (r.lt(&(self.num_rows - 1)) && c.gt(&0)).then_some((r + 1, c - 1)),
+            (r.lt(&(self.num_rows - 1)) && c.lt(&(self.num_cols - 1))).then_some((r + 1, c + 1)),
         ]
         .into_iter()
         .flatten()

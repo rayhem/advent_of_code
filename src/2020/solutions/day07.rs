@@ -30,7 +30,7 @@ impl Solution for Day07 {
 
     fn part_two(&self, input: &str) -> Option<String> {
         let luggage: Luggage = input.lines().map(parse_contents).collect();
-        Some((luggage.count_bags(&"shiny gold".to_owned()) - 1).to_string())
+        Some((luggage.count_bags("shiny gold") - 1).to_string())
     }
 }
 

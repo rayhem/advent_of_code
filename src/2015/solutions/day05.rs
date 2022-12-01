@@ -1,17 +1,17 @@
-use utils::solution::Solution;
 use regex::Regex;
+use utils::solution::Solution;
 
 pub struct Day05 {}
 
 impl Solution for Day05 {
     fn part_one(&self, input: &str) -> Option<String> {
         let passwords = input.split_whitespace();
-        Some(passwords.filter(|s| is_nice(*s)).count().to_string())
+        Some(passwords.filter(|s| is_nice(s)).count().to_string())
     }
 
     fn part_two(&self, input: &str) -> Option<String> {
         let passwords = input.split_whitespace();
-        Some(passwords.filter(|s| is_nice_v2(*s)).count().to_string())
+        Some(passwords.filter(|s| is_nice_v2(s)).count().to_string())
     }
 }
 

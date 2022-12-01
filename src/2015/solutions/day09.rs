@@ -45,7 +45,7 @@ fn distance_bounds(input: &str) -> itertools::MinMaxResult<i32> {
     let mut places: HashSet<&str> = HashSet::new();
     let mut distances: HashMap<&str, HashMap<&str, i32>> = HashMap::new();
 
-    for LocationPair { from, to, distance } in input.lines().map(LocationPair::try_from).flatten() {
+    for LocationPair { from, to, distance } in input.lines().flat_map(LocationPair::try_from) {
         places.insert(from);
         places.insert(to);
 

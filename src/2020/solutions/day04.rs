@@ -108,12 +108,12 @@ impl Passport {
     fn is_really_valid(&self) -> bool {
         let hair_regex = Regex::new(r"#[0-9a-f]{6}").unwrap();
         let conditions: Vec<Option<bool>> = vec![
-            self.birth_year.map(|y| 1920 <= y && y <= 2002),
-            self.issue_year.map(|y| 2010 <= y && y <= 2020),
-            self.expiration_year.map(|y| 2020 <= y && y <= 2030),
+            self.birth_year.map(|y| (1920..=2002).contains(&y)),
+            self.issue_year.map(|y| (2010..=2020).contains(&y)),
+            self.expiration_year.map(|y| (2020..=2030).contains(&y)),
             self.height.map(|h| match h {
-                Height::Metric(x) => (150 <= x && x <= 193),
-                Height::Imperial(x) => (59 <= x && x <= 76),
+                Height::Metric(x) => (150..=193).contains(&x),
+                Height::Imperial(x) => (59..=76).contains(&x),
                 Height::Unknown(_) => false,
             }),
             self.hair_color

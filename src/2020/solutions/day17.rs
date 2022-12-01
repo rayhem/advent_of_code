@@ -103,11 +103,7 @@ fn evolve(cubes: &HashSet<Coordinate>, dimensions: Dimensions) -> HashSet<Coordi
         }
     }
 
-    for neighbor in cubes
-        .iter()
-        .map(|coord| coord.neighbors(dimensions))
-        .flatten()
-    {
+    for neighbor in cubes.iter().flat_map(|coord| coord.neighbors(dimensions)) {
         let num_active_neighbors = neighbor
             .neighbors(dimensions)
             .map(|neighbor| match cubes.get(&neighbor) {
