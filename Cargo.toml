@@ -2,7 +2,12 @@
 name = "advent_of_code"
 version = "0.1.0"
 edition = "2021"
+default-run = "2022"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[[bin]]
+name = "2022"
+path = "src/bin/2022/main.rs"
 
 [dependencies]
