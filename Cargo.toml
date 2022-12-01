@@ -12,11 +12,11 @@ path = "src/utils/lib.rs"
 
 [[bin]]
 name = "2022"
-path = "src/bin/2022/main.rs"
+path = "src/2022/main.rs"
 
 [[bin]]
 name = "2021"
-path = "src/bin/2021/main.rs"
+path = "src/2021/main.rs"
 
 [dependencies]
 clap = "2.33"
