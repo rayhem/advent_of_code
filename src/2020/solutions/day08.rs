@@ -146,11 +146,7 @@ impl VirtualMachine {
     }
 
     fn is_ok(&self) -> bool {
-        match self.status {
-            Status::InfiniteLoop => false,
-            Status::Failed => false,
-            _ => true,
-        }
+        !matches!(self.status, Status::InfiniteLoop | Status::Failed)
     }
 }
 

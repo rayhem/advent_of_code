@@ -8,8 +8,7 @@ impl Solution for Day14 {
     fn part_one(&self, input: &str) -> Option<String> {
         input
             .lines()
-            .map(Reindeer::try_from)
-            .flatten()
+            .flat_map(Reindeer::try_from)
             .map(|reindeer| reindeer.distance(MAX_TIME))
             .max()
             .map(|v| v.to_string())
@@ -18,8 +17,7 @@ impl Solution for Day14 {
     fn part_two(&self, input: &str) -> Option<String> {
         let reindeer = input
             .lines()
-            .map(Reindeer::try_from)
-            .flatten()
+            .flat_map(Reindeer::try_from)
             .collect::<Vec<_>>();
         let mut scores = vec![0; reindeer.len()];
 

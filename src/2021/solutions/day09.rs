@@ -1,6 +1,6 @@
-use utils::solution::Solution;
 use itertools::Itertools;
 use std::{collections::HashSet, ops::Deref, str::FromStr};
+use utils::solution::Solution;
 
 pub struct Day09 {}
 
@@ -65,10 +65,10 @@ impl Grid {
         let (r, c) = self.idx_to_coord(idx);
 
         [
-            r.gt(&0).then(|| (r - 1, c)),
-            c.gt(&0).then(|| (r, c - 1)),
-            c.lt(&(self.num_cols - 1)).then(|| (r, c + 1)),
-            r.lt(&(self.num_rows - 1)).then(|| (r + 1, c)),
+            r.gt(&0).then_some((r - 1, c)),
+            c.gt(&0).then_some((r, c - 1)),
+            c.lt(&(self.num_cols - 1)).then_some((r, c + 1)),
+            r.lt(&(self.num_rows - 1)).then_some((r + 1, c)),
         ]
         .into_iter()
         .flatten()

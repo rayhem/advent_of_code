@@ -10,11 +10,9 @@ impl Solution for Day16 {
             (input
                 .lines()
                 .map(|line| line.split_once(':').unwrap().1)
-                .map(Sue::from_str)
-                .flatten()
+                .flat_map(Sue::from_str)
                 .enumerate()
-                .filter(|(_, sue)| sue.matches_ideal_sue())
-                .next()
+                .find(|(_, sue)| sue.matches_ideal_sue())
                 .unwrap()
                 .0
                 + 1)
@@ -27,11 +25,9 @@ impl Solution for Day16 {
             (input
                 .lines()
                 .map(|line| line.split_once(':').unwrap().1)
-                .map(Sue::from_str)
-                .flatten()
+                .flat_map(Sue::from_str)
                 .enumerate()
-                .filter(|(_, sue)| sue.really_matches_ideal_sue())
-                .next()
+                .find(|(_, sue)| sue.really_matches_ideal_sue())
                 .unwrap()
                 .0
                 + 1)

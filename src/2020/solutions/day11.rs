@@ -154,7 +154,7 @@ impl GridSimulation {
     }
 
     fn num_occupied(&self) -> i32 {
-        (&self.grid)
+        self.grid
             .iter()
             .flatten()
             .map(|s| match s {

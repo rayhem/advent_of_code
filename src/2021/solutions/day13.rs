@@ -1,5 +1,5 @@
+use std::{cmp::Ordering, collections::HashSet, fmt::Display, str::FromStr};
 use utils::solution::Solution;
-use std::{cmp::Ordering, collections::HashSet, error::Error, fmt::Display, str::FromStr};
 
 pub struct Day13 {}
 

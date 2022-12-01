@@ -11,11 +11,11 @@ enum Day05Error {
 
 impl Solution for Day05 {
     fn part_one(&self, input: &str) -> Option<String> {
-        Some(input.lines().map(|l| seat_id(l)).max().unwrap().to_string())
+        Some(input.lines().map(seat_id).max().unwrap().to_string())
     }
 
     fn part_two(&self, input: &str) -> Option<String> {
-        let passes: HashSet<_> = input.lines().map(|l| seat_id(l)).collect();
+        let passes: HashSet<_> = input.lines().map(seat_id).collect();
         let seats: HashSet<_> = (0..(127 * 8)).collect();
 
         let mut unfilled: Vec<_> = seats.difference(&passes).into_iter().collect();

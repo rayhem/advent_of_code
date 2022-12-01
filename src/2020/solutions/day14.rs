@@ -44,8 +44,7 @@ impl Solution for Day14 {
                             (0..36).filter(|b| mask.as_x & (1_u64 << b) > 0).collect();
 
                         for bitset in (0..=floating_bits.len())
-                            .map(|len| floating_bits.iter().combinations(len))
-                            .flatten()
+                            .flat_map(|len| floating_bits.iter().combinations(len))
                         {
                             mem.insert(
                                 bitset.iter().fold(address, |acc, &bit| acc | (1u64 << bit)),
