@@ -6,8 +6,13 @@ default-run = "2022"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
+[lib]
+name = "utils"
+path = "src/utils.lib.rs"
+
 [[bin]]
 name = "2022"
 path = "src/bin/2022/main.rs"
 
 [dependencies]
+clap = "2.33"
