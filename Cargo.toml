@@ -1,6 +1,7 @@
 [package]
 name = "advent_of_code"
 version = "0.1.0"
+authors = ["Connor Glosser <glosser1@gmail.com>"]
 edition = "2021"
 default-run = "2022"
 
@@ -18,6 +19,11 @@ path = "src/2022/main.rs"
 name = "2021"
 path = "src/2021/main.rs"
 
+[[bin]]
+name = "2020"
+path = "src/2020/main.rs"
+
 [dependencies]
 clap = "2.33"
 itertools = "0.10"
+regex = "1.4.2"
