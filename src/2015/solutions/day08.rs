@@ -11,20 +11,3 @@ impl Solution for Day08 {
         todo!()
     }
 }
-
-#[cfg(test)]
-mod tests {
-    mod part1 {
-        use super::super::*;
-
-        #[test]
-        fn example0() {}
-    }
-
-    mod part2 {
-        use super::super::*;
-
-        #[test]
-        fn example0() {}
-    }
-}

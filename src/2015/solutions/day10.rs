@@ -1,5 +1,5 @@
-use utils::solution::Solution;
 use itertools::Itertools;
+use utils::solution::Solution;
 
 pub struct Day10 {}
 
@@ -27,21 +27,4 @@ fn look_and_say_length_after(mut s: String, n: i32) -> usize {
     }
 
     s.len()
-}
-
-#[cfg(test)]
-mod tests {
-    mod part1 {
-        use super::super::*;
-
-        #[test]
-        fn example0() {}
-    }
-
-    mod part2 {
-        use super::super::*;
-
-        #[test]
-        fn example0() {}
-    }
 }
