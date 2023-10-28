@@ -1,4 +1,4 @@
-use regex::Regex;
+use itertools::Itertools;
 use utils::solution::Solution;
 
 pub struct Day05 {}
@@ -16,26 +16,41 @@ impl Solution for Day05 {
 }
 
 fn has_three_vowels(password: &str) -> bool {
-    let re = Regex::new(".*[aeiou].*[aeiou].*[aeiou].*").unwrap();
-    re.is_match(password)
+    let vowel_count = password.chars().filter(|ch| "aeiou".contains(*ch)).count();
+    vowel_count >= 3
 }
 
 fn has_duplicate(password: &str) -> bool {
-    let re = Regex::new(".{2,}").unwrap();
-    re.is_match(password)
+    password.chars().tuple_windows().any(|(a, b)| a == b)
 }
 
-fn no_bad_strings(password: &str) -> bool {
-    let re = Regex::new("").unwrap();
-    re.is_match(password)
+fn has_bad_strings(password: &str) -> bool {
+    ["ab", "cd", "pq", "xy"]
+        .iter()
+        .any(|invalid| password.contains(invalid))
 }
 
 fn is_nice(password: &str) -> bool {
-    has_three_vowels(password) && has_duplicate(password) && no_bad_strings(password)
+    has_three_vowels(password) && has_duplicate(password) && !has_bad_strings(password)
 }
 
-fn is_nice_v2(_password: &str) -> bool {
-    true
+fn pair_occurs_twice(password: &str) -> bool {
+    for i in 0..(password.len() - 1) {
+        let s = &password[i..i + 2];
+        if password[(i + 2)..].contains(s) {
+            return true;
+        }
+    }
+
+    false
+}
+
+fn has_sandwich(password: &str) -> bool {
+    password.chars().tuple_windows().any(|(a, _, b)| a == b)
+}
+
+fn is_nice_v2(password: &str) -> bool {
+    pair_occurs_twice(password) && has_sandwich(password)
 }
 
 utils::verify!(Day05, utils::my_input!("2015", "05"), "258", "53");
@@ -47,27 +62,47 @@ mod tests {
 
         #[test]
         fn example0() {
-            assert!(is_nice("ugknbfddgicrmopn"));
+            const INPUT: &str = "ugknbfddgicrmopn";
+            assert!(has_three_vowels(INPUT));
+            assert!(has_duplicate(INPUT));
+            assert!(!has_bad_strings(INPUT));
+            assert!(is_nice(INPUT));
         }
 
         #[test]
         fn example1() {
-            assert!(is_nice("aaa"));
+            const INPUT: &str = "aaa";
+            assert!(has_three_vowels(INPUT));
+            assert!(has_duplicate(INPUT));
+            assert!(!has_bad_strings(INPUT));
+            assert!(is_nice(INPUT));
         }
 
         #[test]
         fn example2() {
-            assert!(!is_nice("jchzalrnumimnmhp"));
+            const INPUT: &str = "jchzalrnumimnmhp";
+            assert!(has_three_vowels(INPUT));
+            assert!(!has_duplicate(INPUT));
+            assert!(!has_bad_strings(INPUT));
+            assert!(!is_nice(INPUT));
         }
 
         #[test]
         fn example3() {
-            assert!(!is_nice("haegwjzuvuyypxyu"));
+            const INPUT: &str = "haegwjzuvuyypxyu";
+            assert!(has_three_vowels(INPUT));
+            assert!(has_duplicate(INPUT));
+            assert!(has_bad_strings(INPUT));
+            assert!(!is_nice(INPUT));
         }
 
         #[test]
         fn example4() {
-            assert!(!is_nice("dvszwmarrgswjxmb"));
+            const INPUT: &str = "dvszwmarrgswjxmb";
+            assert!(!has_three_vowels(INPUT));
+            assert!(has_duplicate(INPUT));
+            assert!(!has_bad_strings(INPUT));
+            assert!(!is_nice(INPUT));
         }
     }
     mod part2 {
@@ -75,22 +110,34 @@ mod tests {
 
         #[test]
         fn example0() {
-            assert!(is_nice_v2("qjhvhtzxzqqjkmpb"));
+            const INPUT: &str = "qjhvhtzxzqqjkmpb";
+            assert!(pair_occurs_twice(INPUT));
+            assert!(has_sandwich(INPUT));
+            assert!(is_nice_v2(INPUT));
         }
 
         #[test]
         fn example1() {
-            assert!(is_nice_v2("xxyxx"));
+            const INPUT: &str = "xxyxx";
+            assert!(pair_occurs_twice(INPUT));
+            assert!(has_sandwich(INPUT));
+            assert!(is_nice_v2(INPUT));
         }
 
         #[test]
         fn example2() {
-            assert!(!is_nice_v2("uurcxstgmygtbstg"));
+            const INPUT: &str = "uurcxstgmygtbstg";
+            assert!(pair_occurs_twice(INPUT));
+            assert!(!has_sandwich(INPUT));
+            assert!(!is_nice_v2(INPUT));
         }
 
         #[test]
         fn example3() {
-            assert!(!is_nice_v2("ieodomkazucvgmuy"));
+            const INPUT: &str = "ieodomkazucvgmuy";
+            assert!(!pair_occurs_twice(INPUT));
+            assert!(has_sandwich(INPUT));
+            assert!(!is_nice_v2(INPUT));
         }
     }
 }
