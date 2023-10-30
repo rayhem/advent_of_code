@@ -1,3 +1,4 @@
+use glam::IVec2;
 use lazy_static::lazy_static;
 use regex::Regex;
 use std::cmp::{max, min};
@@ -9,7 +10,7 @@ pub struct Day06 {}
 
 impl Solution for Day06 {
     fn part_one(&self, input: &str) -> Option<String> {
-        let rule = |action: &Action, x: i32| match action {
+        let rule = |action: &Action, x: LightStatus| match action {
             Action::Toggle => 1 - x,
             Action::TurnOff => max(0, x - 1),
             Action::TurnOn => min(1, x + 1),
@@ -19,7 +20,7 @@ impl Solution for Day06 {
     }
 
     fn part_two(&self, input: &str) -> Option<String> {
-        let rule = |action: &Action, x: i32| match action {
+        let rule = |action: &Action, x: LightStatus| match action {
             Action::Toggle => x + 2,
             Action::TurnOff => max(0, x - 1),
             Action::TurnOn => x + 1,
@@ -29,65 +30,70 @@ impl Solution for Day06 {
     }
 }
 
-fn total_lights(input: &str, update_rule: fn(&Action, i32) -> i32) -> i32 {
-    let mut grid: Grid = [[0; 1000]; 1000];
-    let instructions = input.lines().map(parse_instruction);
+fn total_lights(input: &str, update_rule: fn(&Action, LightStatus) -> LightStatus) -> LightStatus {
+    let mut grid: std::boxed::Box<Grid> = std::boxed::Box::new([[0; 1000]; 1000]);
 
-    for (action, (row1, col1), (row2, col2)) in instructions {
-        for row in row1..=row2 {
-            for col in col1..=col2 {
+    for Instruction {
+        action,
+        lbound,
+        ubound,
+    } in input.lines().flat_map(Instruction::from_str)
+    {
+        for row in lbound.y..=ubound.y {
+            for col in lbound.x..=ubound.x {
                 grid[row as usize][col as usize] =
                     update_rule(&action, grid[row as usize][col as usize]);
             }
         }
     }
 
-    grid.iter().map(|x| x.iter().sum::<i32>()).sum::<i32>()
+    grid.iter().flatten().sum()
 }
 
-fn parse_instruction(s: &str) -> (Action, (i32, i32), (i32, i32)) {
-    lazy_static! {
-        static ref RE: Regex = Regex::new("(\\d+),(\\d+) through (\\d+),(\\d+)").unwrap();
-    }
-
-    let captures = RE.captures(s).unwrap();
-    (
-        Action::from_str(s).unwrap(),
-        (
-            captures[1].parse::<i32>().unwrap(),
-            captures[2].parse::<i32>().unwrap(),
-        ),
-        (
-            captures[3].parse::<i32>().unwrap(),
-            captures[4].parse::<i32>().unwrap(),
-        ),
-    )
-}
-
-type Grid = [[i32; 1000]; 1000];
+type LightStatus = i32;
+type Grid = [[LightStatus; 1000]; 1000];
 
 enum Action {
-    TurnOn,
-    TurnOff,
     Toggle,
+    TurnOff,
+    TurnOn,
 }
 
-impl FromStr for Action {
+struct Instruction {
+    action: Action,
+    lbound: IVec2,
+    ubound: IVec2,
+}
+
+impl FromStr for Instruction {
     type Err = &'static str;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
-        if s.contains("turn off") {
-            return Ok(Action::TurnOff);
+        lazy_static! {
+            static ref RE: Regex = Regex::new("(\\d+),(\\d+) through (\\d+),(\\d+)").unwrap();
         }
 
-        if s.contains("turn on") {
-            return Ok(Action::TurnOn);
-        }
+        let captures = RE.captures(s).ok_or("Could not parse coordinates")?;
+        let coordinates = (1..=4)
+            .map(|i| captures[i].parse::<i32>().unwrap())
+            .collect::<Vec<_>>();
+        let lbound = IVec2::new(coordinates[0], coordinates[1]);
+        let ubound = IVec2::new(coordinates[2], coordinates[3]);
 
-        if s.contains("toggle") {
-            return Ok(Action::Toggle);
-        }
-
-        Err("Could not parse action")
+        Ok(Instruction {
+            action: if s.contains("toggle") {
+                Action::Toggle
+            } else if s.contains("turn off") {
+                Action::TurnOff
+            } else if s.contains("turn on") {
+                Action::TurnOn
+            } else {
+                return Err("Could not evaluate action");
+            },
+            lbound,
+            ubound,
+        })
     }
 }
+
+utils::verify!(Day06, utils::my_input!("2015", "06"), "400410", "15343601");
