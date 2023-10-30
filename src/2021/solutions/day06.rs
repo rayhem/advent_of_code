@@ -1,5 +1,5 @@
-use utils::solution::Solution;
 use std::str::FromStr;
+use utils::solution::Solution;
 
 pub struct Day06 {}
 
@@ -81,22 +81,10 @@ mod tests {
         }
     }
 
-    mod integration {
-        use super::*;
-        const SOLUTION: Day06 = Day06 {};
-        static INPUT: &str = include_str!(concat!(env!("CARGO_MANIFEST_DIR"), "/inputs/day06.dat"));
-
-        #[test]
-        fn part_one() {
-            assert_eq!(SOLUTION.part_one(INPUT), Some(String::from("396210")));
-        }
-
-        #[test]
-        fn part_two() {
-            assert_eq!(
-                SOLUTION.part_two(INPUT),
-                Some(String::from("1770823541496"))
-            );
-        }
-    }
+    utils::verify!(
+        Day06,
+        utils::my_input!("2021", "06"),
+        "396210",
+        "1770823541496"
+    );
 }

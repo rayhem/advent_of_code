@@ -161,19 +161,5 @@ fold along x=5";
         fn example2() {}
     }
 
-    mod integration {
-        use super::*;
-        const SOLUTION: Day13 = Day13 {};
-        static INPUT: &str = include_str!(concat!(env!("CARGO_MANIFEST_DIR"), "/inputs/day13.dat"));
-
-        #[test]
-        fn part_one() {
-            assert_eq!(SOLUTION.part_one(INPUT), Some(String::from("")));
-        }
-
-        #[test]
-        fn part_two() {
-            assert_eq!(SOLUTION.part_two(INPUT), Some(String::from("")));
-        }
-    }
+    utils::verify!(Day13, utils::my_input!("2021", "13"), "", "");
 }

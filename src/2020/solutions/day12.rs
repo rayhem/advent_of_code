@@ -159,27 +159,19 @@ fn move_by((ref mut x, ref mut y): &mut (i32, i32), (dx, dy): Point, distance: i
 mod tests {
     use super::*;
 
-    const EXAMPLE: &str = "F10\nN3\nF7\nR90\nF11";
-    const INPUT: &str =
-        include_str!("/home/connor/Documents/code/advent/advent2020/inputs/day12.txt");
+    mod examples {
+        use super::*;
 
-    #[test]
-    fn example_part_one() {
-        assert_eq!(Day12 {}.part_one(EXAMPLE), Some(String::from("25")));
-    }
+        const EXAMPLE: &str = "F10\nN3\nF7\nR90\nF11";
 
-    #[test]
-    fn example_part_two() {
-        assert_eq!(Day12 {}.part_two(EXAMPLE), Some(String::from("286")));
-    }
+        #[test]
+        fn example_part_one() {
+            assert_eq!(Day12 {}.part_one(EXAMPLE), Some(String::from("25")));
+        }
 
-    #[test]
-    fn baseline_part_one() {
-        assert_eq!(Day12 {}.part_one(INPUT), Some(String::from("381")));
-    }
-
-    #[test]
-    fn baseline_part_two() {
-        assert_eq!(Day12 {}.part_two(INPUT), Some(String::from("28591")));
+        #[test]
+        fn example_part_two() {
+            assert_eq!(Day12 {}.part_two(EXAMPLE), Some(String::from("286")));
+        }
     }
 }
