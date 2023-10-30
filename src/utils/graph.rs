@@ -5,7 +5,7 @@ use std::hash::Hash;
 /// Details an edge in a graph between nodes `a` and `b`. The `data` field
 /// defaults to the zero-sized unit type, `()`, which is suitable for undirected
 /// graphs. The generic flexibility in `data` allows for representations of
-/// weighted and/or directed graphs or even things like named edges.
+/// weighted and directed graphs or named edges.
 #[derive(Clone, Debug, PartialEq)]
 pub struct Edge<T, U = ()> {
     pub a: T,
@@ -93,7 +93,6 @@ mod tests {
     #[test]
     fn add_cycle() {
         let edges = vec![Edge::new(0, 1), Edge::new(1, 2), Edge::new(2, 0)];
-
         let graph = Graph::from(edges);
 
         assert_eq!(graph.edges.len(), 3);
