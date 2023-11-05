@@ -50,15 +50,8 @@ impl<T: Clone + Debug + Eq + Hash> Graph<T> {
         let edge_index = self.edges.len();
         self.edges.push(edge.clone());
 
-        self.nodes
-            .entry(edge.a)
-            .or_insert_with(Vec::new)
-            .push(edge_index);
-
-        self.nodes
-            .entry(edge.b)
-            .or_insert_with(Vec::new)
-            .push(edge_index);
+        self.nodes.entry(edge.a).or_default().push(edge_index);
+        self.nodes.entry(edge.b).or_default().push(edge_index);
     }
 }
 
@@ -72,6 +65,12 @@ impl<T: Clone + Debug + Eq + Hash, U: IntoIterator<Item = Edge<T>>> From<U> for 
         }
 
         graph
+    }
+}
+
+impl<T: Clone + Debug + Eq + Hash> Default for Graph<T> {
+    fn default() -> Self {
+        Self::new()
     }
 }
 
