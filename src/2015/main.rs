@@ -13,6 +13,8 @@ fn main() {
     solutions.insert(4, Box::new(solutions::day04::Day04 {}));
     solutions.insert(5, Box::new(solutions::day05::Day05 {}));
     solutions.insert(6, Box::new(solutions::day06::Day06 {}));
+    solutions.insert(7, Box::new(solutions::day07::Day07 {}));
+    solutions.insert(8, Box::new(solutions::day08::Day08 {}));
     solutions.insert(9, Box::new(solutions::day09::Day09 {}));
     solutions.insert(10, Box::new(solutions::day10::Day10 {}));
 
