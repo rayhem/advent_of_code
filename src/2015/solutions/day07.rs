@@ -135,7 +135,7 @@ mod tests {
     use super::*;
 
     #[test]
-    fn part_one() {
+    fn example_input() {
         const INPUT: &str = "123 -> x
 456 -> y
 x AND y -> d
@@ -157,3 +157,5 @@ NOT y -> i";
         assert_eq!(wires.eval(Operand::Name("y".to_string())), 456);
     }
 }
+
+utils::verify!(Day07, utils::my_input!("2015", "07"), "3176", "14710");
