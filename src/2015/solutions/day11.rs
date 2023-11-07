@@ -132,14 +132,15 @@ mod tests {
         assert!(!password.has_pairs());
 
         let mut password = Password::from_str("abcdefgh").unwrap();
-        password.increment();
+        password.next();
+
         assert!(password.has_run());
         assert!(password.has_no_invalid_chars());
         assert!(password.has_pairs());
         assert_eq!(password.to_string(), "abcdffaa");
 
         let mut password = Password::from_str("ghijklmn").unwrap();
-        password.increment();
+        password.next();
         assert!(password.has_run());
         assert!(password.has_no_invalid_chars());
         assert!(password.has_pairs());
