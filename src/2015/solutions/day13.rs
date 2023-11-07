@@ -6,7 +6,7 @@ pub struct Day13 {}
 impl Solution for Day13 {
     fn part_one(&self, input: &str) -> Option<String> {
         let (_, happiness) = graph::EdgeList::from(input.lines().map(to_edge))
-            .shortest_tour_by(|forward, backward| -(forward + backward));
+            .shortest_cyclic_tour_by(|forward, backward| -(forward + backward));
 
         Some(happiness.abs().to_string())
     }
@@ -19,18 +19,16 @@ impl Solution for Day13 {
             .unique()
             .collect::<Vec<_>>();
 
-        for name in nodes {
-            edges.extend(
-                [
-                    Edge::with_data("me".to_string(), name.clone(), 0),
-                    Edge::with_data(name, "me".to_string(), 0),
-                ]
-                .into_iter(),
-            );
-        }
+        edges.extend(nodes.into_iter().flat_map(|name| {
+            [
+                Edge::with_data("me".to_string(), name.clone(), 0),
+                Edge::with_data(name, "me".to_string(), 0),
+            ]
+            .into_iter()
+        }));
 
         let (_, happiness) = graph::EdgeList::from(edges)
-            .shortest_tour_by(|forward, backward| -(forward + backward));
+            .shortest_cyclic_tour_by(|forward, backward| -(forward + backward));
 
         Some(happiness.abs().to_string())
     }
@@ -71,7 +69,8 @@ David would lose 7 happiness units by sitting next to Bob.
 David would gain 41 happiness units by sitting next to Carol.";
         let graph = graph::EdgeList::from(INPUT.lines().map(to_edge));
 
-        let (_, happiness) = graph.shortest_tour_by(|forward, backward| -(forward + backward));
+        let (_, happiness) =
+            graph.shortest_cyclic_tour_by(|forward, backward| -(forward + backward));
         assert_eq!(happiness.abs(), 330);
     }
 }
