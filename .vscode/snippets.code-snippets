@@ -19,7 +19,7 @@
 		"scope": "",
 		"prefix": "new solution",
 		"body": [
-			"use crate::solutions::Solution;",
+			"use utils::solution::Solution;",
 			"",
 			"pub struct Day$1 {}",
 			"",

@@ -161,7 +161,7 @@ impl<T, Weight: Copy + Ord + Default + std::ops::Add<Output = Weight>> EdgeList<
             .permutations(self.nodes.len() - 1)
             .map(|v| {
                 std::iter::once(0)
-                    .chain(v.into_iter())
+                    .chain(v)
                     .chain(std::iter::once(0))
                     .collect()
             });
