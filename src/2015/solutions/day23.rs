@@ -9,7 +9,7 @@ impl Solution for Day23 {
         let instructions = input.lines().flat_map(Instruction::from_str).collect_vec();
         let mut machine = Machine::new((0, 0), instructions);
 
-        while let Some(_) = machine.next() {}
+        for _ in machine.by_ref() {}
 
         Some(machine.register_b.to_string())
     }
@@ -18,7 +18,7 @@ impl Solution for Day23 {
         let instructions = input.lines().flat_map(Instruction::from_str).collect_vec();
         let mut machine = Machine::new((1, 0), instructions);
 
-        while let Some(_) = machine.next() {}
+        for _ in machine.by_ref() {}
 
         Some(machine.register_b.to_string())
     }
