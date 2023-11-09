@@ -24,6 +24,7 @@ fn main() {
     solutions.insert(18, Box::new(solutions::day18::Day18 {}));
     solutions.insert(19, Box::new(solutions::day19::Day19 {}));
     solutions.insert(20, Box::new(solutions::day20::Day20 {}));
+    solutions.insert(23, Box::new(solutions::day23::Day23 {}));
 
     let root_dir = cli.value_of("inputs").unwrap();
     for day in utils::cli::get_cli_days(&cli).into_iter() {
