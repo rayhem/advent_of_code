@@ -4,24 +4,16 @@ pub struct Day08 {}
 
 impl Solution for Day08 {
     fn part_one(&self, input: &str) -> Option<String> {
-        Some(
-            input
-                .lines()
-                .map(length_difference)
-                .sum::<i32>()
-                .to_string(),
-        )
+        Some(run(input, length_difference))
     }
 
     fn part_two(&self, input: &str) -> Option<String> {
-        Some(
-            input
-                .lines()
-                .map(encoded_difference)
-                .sum::<i32>()
-                .to_string(),
-        )
+        Some(run(input, encoded_difference))
     }
+}
+
+fn run(s: &str, f: fn(&str) -> i32) -> String {
+    s.lines().map(f).sum::<i32>().to_string()
 }
 
 fn length_difference(s: &str) -> i32 {
