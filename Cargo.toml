@@ -29,6 +29,7 @@ path = "src/2015/main.rs"
 
 [dependencies]
 clap = "2.33"
+glam = "0.24.2"
 itertools = "0.10"
 lazy_static = "1.4"
 md5 = "0.7"
