@@ -128,7 +128,7 @@ impl VirtualMachine {
             _ if ip == self.instructions.len() => Status::Terminated,
             _ if ip > self.instructions.len() => Status::Failed,
             _ => match self.hit_count[ip] {
-                i if i == 0 => Status::Executing,
+                0 => Status::Executing,
                 _ => Status::InfiniteLoop,
             },
         }

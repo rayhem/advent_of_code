@@ -18,7 +18,7 @@ impl Solution for Day05 {
         let passes: HashSet<_> = input.lines().map(seat_id).collect();
         let seats: HashSet<_> = (0..(127 * 8)).collect();
 
-        let mut unfilled: Vec<_> = seats.difference(&passes).into_iter().collect();
+        let mut unfilled: Vec<_> = seats.difference(&passes).collect();
         unfilled.sort();
 
         unfilled
