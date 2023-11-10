@@ -64,20 +64,3 @@ fn distance_bounds(input: &str) -> itertools::MinMaxResult<i32> {
         })
         .minmax()
 }
-
-#[cfg(test)]
-mod tests {
-    mod part1 {
-        use super::super::*;
-
-        #[test]
-        fn example0() {}
-    }
-
-    mod part2 {
-        use super::super::*;
-
-        #[test]
-        fn example0() {}
-    }
-}
