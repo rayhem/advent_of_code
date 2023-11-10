@@ -38,7 +38,7 @@ impl MemoryGame {
         let mut history: HashMap<_, _> = starting_numbers
             .iter()
             .enumerate()
-            .map(|(i, &n)| (n, i as usize))
+            .map(|(i, &n)| (n, i))
             .collect();
         history.remove(starting_numbers.last().unwrap());
         MemoryGame {
@@ -48,8 +48,8 @@ impl MemoryGame {
     }
 
     fn take_turn(&mut self) {
-        let prev_turn = (self.sequence.len() as usize) - 1;
-        let prev = *self.sequence.last().unwrap() as usize;
+        let prev_turn = self.sequence.len() - 1;
+        let prev = *self.sequence.last().unwrap();
 
         let next = match self.history.get(&prev) {
             None => 0,
