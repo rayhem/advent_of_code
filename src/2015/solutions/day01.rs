@@ -12,7 +12,7 @@ impl Solution for Day01 {
             (input
                 .chars()
                 .scan(0, |acc, c| {
-                    *acc = *acc + as_number(c);
+                    *acc += as_number(c);
                     Some(*acc)
                 })
                 .take_while(|height| height > &-1)
