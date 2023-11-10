@@ -34,3 +34,6 @@ itertools = "0.10"
 lazy_static = "1.4"
 md5 = "0.7"
 regex = "1.4.2"
+
+[features]
+verification = []
