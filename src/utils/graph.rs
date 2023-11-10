@@ -1,8 +1,7 @@
 use core::fmt::Debug;
+use itertools::Itertools;
 use std::collections::HashMap;
 use std::hash::Hash;
-
-use itertools::{FoldWhile, Itertools};
 
 /// Details an edge in a graph between nodes `a` and `b`. The `data` field
 /// defaults to the zero-sized unit type, `()`, which is suitable for undirected
@@ -119,27 +118,28 @@ where
     }
 }
 
-impl<T, Weight: Copy + Ord + Default + std::ops::Add<Output = Weight>> EdgeList<T, Weight> {
-    fn shortest_tour_impl<V: Iterator<Item = Vec<usize>>>(
+impl<T, Weight> EdgeList<T, Weight>
+where
+    Weight: Copy + Ord + Default + std::ops::Add<Output = Weight>,
+{
+    fn shortest_tour_impl<V>(
         &self,
-        dist: fn(Weight, Weight) -> Weight,
+        dist: fn(Option<Weight>, Option<Weight>) -> Option<Weight>,
         tours: V,
-    ) -> (Vec<usize>, Weight) {
+    ) -> (Vec<usize>, Weight)
+    where
+        V: IntoIterator<Item = Vec<usize>>,
+    {
         tours
-            .flat_map(|tour| {
+            .into_iter()
+            .filter_map(|tour| {
                 tour.iter()
                     .tuple_windows()
-                    .fold_while(Some(Weight::default()), |acc, (&start, &end)| match acc {
-                        None => FoldWhile::Done(None),
-                        Some(n) => {
-                            FoldWhile::Continue(self.edges.get(&(start, end)).and_then(|forward| {
-                                self.edges
-                                    .get(&(end, start))
-                                    .map(|backward| n + dist(*forward, *backward))
-                            }))
-                        }
+                    .try_fold(Weight::default(), |acc, (&start, &end)| {
+                        let fwd = self.edges.get(&(start, end));
+                        let bkwd = self.edges.get(&(end, start));
+                        dist(fwd.copied(), bkwd.copied()).map(|weight| acc + weight)
                     })
-                    .into_inner()
                     .map(|tour_length| (tour, tour_length))
             })
             .min_by_key(|(_, tour_length)| *tour_length)
@@ -155,7 +155,7 @@ impl<T, Weight: Copy + Ord + Default + std::ops::Add<Output = Weight>> EdgeList<
     /// Assumes the tour starts and ends at nodes[0].
     pub fn shortest_cyclic_tour_by(
         &self,
-        dist: fn(forward_weight: Weight, backward_weight: Weight) -> Weight,
+        dist: fn(forward_weight: Option<Weight>, backward_weight: Option<Weight>) -> Option<Weight>,
     ) -> (Vec<usize>, Weight) {
         let indices = (1..self.nodes.len())
             .permutations(self.nodes.len() - 1)
@@ -175,7 +175,7 @@ impl<T, Weight: Copy + Ord + Default + std::ops::Add<Output = Weight>> EdgeList<
     /// reverse distance.
     pub fn shortest_acyclic_tour_by(
         &self,
-        dist: fn(Weight, Weight) -> Weight,
+        dist: fn(Option<Weight>, Option<Weight>) -> Option<Weight>,
     ) -> (Vec<usize>, Weight) {
         let indices = (0..self.nodes.len()).permutations(self.nodes.len());
         self.shortest_tour_impl(dist, indices)
