@@ -64,3 +64,5 @@ fn distance_bounds(input: &str) -> itertools::MinMaxResult<i32> {
         })
         .minmax()
 }
+
+utils::verify!(Day09, utils::my_input!("2015", "09"), "141", "736");

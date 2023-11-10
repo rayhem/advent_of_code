@@ -28,3 +28,5 @@ fn look_and_say_length_after(mut s: String, n: i32) -> usize {
 
     s.len()
 }
+
+utils::verify!(Day10, utils::my_input!("2015", "10"), "49282", "6989950");
