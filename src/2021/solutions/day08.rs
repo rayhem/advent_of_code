@@ -55,19 +55,5 @@ gcafb gcf dcaebfg ecagb gf abcdeg gaef cafbge fdbac fegbdc | fgae cfgab fg bagce
         fn example2() {}
     }
 
-    mod integration {
-        use super::*;
-        const SOLUTION: Day08 = Day08 {};
-        static INPUT: &str = include_str!(concat!(env!("CARGO_MANIFEST_DIR"), "/inputs/day08.dat"));
-
-        #[test]
-        fn part_one() {
-            assert_eq!(SOLUTION.part_one(INPUT), Some(String::from("333755")));
-        }
-
-        #[test]
-        fn part_two() {
-            assert_eq!(SOLUTION.part_two(INPUT), Some(String::from("94017638")));
-        }
-    }
+    utils::verify!(Day08, utils::my_input!("2021", "08"), "333755", "94017638");
 }

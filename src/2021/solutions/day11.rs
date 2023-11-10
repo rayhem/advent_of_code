@@ -177,19 +177,5 @@ mod tests {
         fn example2() {}
     }
 
-    mod integration {
-        use super::*;
-        const SOLUTION: Day11 = Day11 {};
-        static INPUT: &str = include_str!(concat!(env!("CARGO_MANIFEST_DIR"), "/inputs/day11.dat"));
-
-        #[test]
-        fn part_one() {
-            assert_eq!(SOLUTION.part_one(INPUT), Some(String::from("1694")));
-        }
-
-        #[test]
-        fn part_two() {
-            assert_eq!(SOLUTION.part_two(INPUT), Some(String::from("346")));
-        }
-    }
+    utils::verify!(Day11, utils::my_input!("2021", "11"), "1694", "346");
 }

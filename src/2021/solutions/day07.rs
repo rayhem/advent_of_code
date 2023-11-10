@@ -1,5 +1,5 @@
-use utils::solution::Solution;
 use itertools::Itertools;
+use utils::solution::Solution;
 
 pub struct Day07 {}
 
@@ -77,19 +77,5 @@ mod tests {
         }
     }
 
-    mod integration {
-        use super::*;
-        const SOLUTION: Day07 = Day07 {};
-        static INPUT: &str = include_str!(concat!(env!("CARGO_MANIFEST_DIR"), "/inputs/day07.dat"));
-
-        #[test]
-        fn part_one() {
-            assert_eq!(SOLUTION.part_one(INPUT), Some(String::from("333755")));
-        }
-
-        #[test]
-        fn part_two() {
-            assert_eq!(SOLUTION.part_two(INPUT), Some(String::from("94017638")));
-        }
-    }
+    utils::verify!(Day07, utils::my_input!("2021", "07"), "333755", "94017638");
 }
