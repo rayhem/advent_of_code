@@ -10,13 +10,16 @@ impl Solution for Day07 {
         Some(
             Wires::from_str(input)
                 .unwrap()
-                .eval(Operand::Name("a".to_string()))
+                .get("a".to_string())
                 .to_string(),
         )
     }
 
-    fn part_two(&self, _input: &str) -> Option<String> {
-        None
+    fn part_two(&self, input: &str) -> Option<String> {
+        let mut wires = Wires::from_str(input).unwrap();
+        let value = wires.clone().get("a".to_string());
+        wires.0.insert("b".to_string(), value.into());
+        Some(wires.eval(Operand::Name("a".to_string())).to_string())
     }
 }
 
@@ -24,6 +27,10 @@ impl Solution for Day07 {
 struct Wires(HashMap<String, Operation>);
 
 impl Wires {
+    fn get(&mut self, s: String) -> Number {
+        self.eval(Operand::Name(s))
+    }
+
     fn eval(&mut self, op: Operand) -> Number {
         match op {
             Operand::Value(value) => value,
@@ -37,7 +44,7 @@ impl Wires {
                     Operation::ShiftR(a, b) => self.eval(a) >> self.eval(b),
                 };
 
-                self.0.insert(s, Operation::Assign(result.into()));
+                self.0.insert(s, result.into());
                 result
             }
         }
@@ -89,6 +96,12 @@ enum Operation {
     Or(Operand, Operand),
     ShiftL(Operand, Operand),
     ShiftR(Operand, Operand),
+}
+
+impl From<Number> for Operation {
+    fn from(value: Number) -> Self {
+        Self::Assign(Operand::Value(value))
+    }
 }
 
 impl FromStr for Operation {
