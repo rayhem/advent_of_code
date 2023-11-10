@@ -1,5 +1,5 @@
-use utils::solution::Solution;
 use std::cmp::min;
+use utils::solution::Solution;
 
 pub struct Day02 {}
 
@@ -31,3 +31,5 @@ fn as_tuple(s: &str) -> [i32; 3] {
     let mut it = s.split('x').map(|s| s.parse::<i32>().unwrap());
     [it.next().unwrap(), it.next().unwrap(), it.next().unwrap()]
 }
+
+utils::verify!(Day02, utils::my_input!("2015", "02"), "1606483", "3842356");

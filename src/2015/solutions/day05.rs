@@ -38,6 +38,8 @@ fn is_nice_v2(_password: &str) -> bool {
     true
 }
 
+utils::verify!(Day05, utils::my_input!("2015", "05"), "258", "53");
+
 #[cfg(test)]
 mod tests {
     mod part1 {

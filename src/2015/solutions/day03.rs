@@ -1,5 +1,5 @@
-use utils::solution::Solution;
 use std::collections::HashSet;
+use utils::solution::Solution;
 
 pub struct Day03 {}
 
@@ -60,3 +60,5 @@ impl TryFrom<char> for Direction {
         }
     }
 }
+
+utils::verify!(Day03, utils::my_input!("2015", "03"), "2565", "2639");
