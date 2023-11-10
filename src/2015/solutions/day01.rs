@@ -30,3 +30,5 @@ fn as_number(ch: char) -> i32 {
         _ => 0,
     }
 }
+
+utils::verify!(Day01, utils::my_input!("2015", "01"), "280", "1797");

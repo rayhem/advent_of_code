@@ -1,7 +1,6 @@
 pub mod cli;
 pub mod solution;
 
-#[cfg(feature = "verification")]
 #[macro_export]
 macro_rules! my_input {
     ($year:expr, $day:expr) => {
@@ -16,11 +15,11 @@ macro_rules! my_input {
     };
 }
 
-#[cfg(feature = "verification")]
 #[macro_export]
 macro_rules! verify {
     ($x:ident, $input_file:expr, $sol1:expr, $sol2:expr) => {
         #[cfg(test)]
+        #[cfg(feature = "verification")]
         mod verification {
             use super::*;
 
