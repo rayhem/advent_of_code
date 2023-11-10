@@ -1,7 +1,6 @@
 use core::fmt::Debug;
 use std::collections::HashMap;
 use std::hash::Hash;
-use std::iter;
 
 use itertools::{FoldWhile, Itertools};
 
@@ -120,22 +119,17 @@ where
     }
 }
 
-impl<T, U: Copy + Ord + Default + std::ops::Add<Output = U>> EdgeList<T, U> {
-    /// Finds the shortest cyclic tour through the graph, evaluating `dist` for
-    /// every edge. The tour distance is then the accumulation of `dist` over
-    /// all edges. This accommodates the general case for directed graphs where
-    /// the forward distance does not equal the reverse distance.
-    pub fn shortest_tour_by(&self, dist: fn(U, U) -> U) -> (Vec<usize>, U) {
-        let tours = (0..self.nodes.len())
-            .chain(iter::once(0))
-            .permutations(self.nodes.len() + 1)
-            .filter(|tour| tour.first().unwrap() == tour.last().unwrap());
-
+impl<T, Weight: Copy + Ord + Default + std::ops::Add<Output = Weight>> EdgeList<T, Weight> {
+    fn shortest_tour_impl<V: Iterator<Item = Vec<usize>>>(
+        &self,
+        dist: fn(Weight, Weight) -> Weight,
+        tours: V,
+    ) -> (Vec<usize>, Weight) {
         tours
             .flat_map(|tour| {
                 tour.iter()
                     .tuple_windows()
-                    .fold_while(Some(U::default()), |acc, (&start, &end)| match acc {
+                    .fold_while(Some(Weight::default()), |acc, (&start, &end)| match acc {
                         None => FoldWhile::Done(None),
                         Some(n) => {
                             FoldWhile::Continue(self.edges.get(&(start, end)).and_then(|forward| {
@@ -152,10 +146,51 @@ impl<T, U: Copy + Ord + Default + std::ops::Add<Output = U>> EdgeList<T, U> {
             .unwrap()
     }
 
-    /// Finds the shortest tour by accumulating the forward distance for each
-    /// pair of nodes
-    pub fn shortest_tour(&self) -> (Vec<usize>, U) {
-        self.shortest_tour_by(|p, _| p)
+    /// Finds the shortest cyclic tour (i.e. start == end) through the graph,
+    /// evaluating `dist` for every edge. The tour distance is then the
+    /// accumulation of `dist` over all edges. This accommodates the general
+    /// case for directed graphs where the forward distance does not equal the
+    /// reverse distance.
+    ///
+    /// Assumes the tour starts and ends at nodes[0].
+    pub fn shortest_cyclic_tour_by(
+        &self,
+        dist: fn(forward_weight: Weight, backward_weight: Weight) -> Weight,
+    ) -> (Vec<usize>, Weight) {
+        let indices = (1..self.nodes.len())
+            .permutations(self.nodes.len() - 1)
+            .map(|v| {
+                std::iter::once(0)
+                    .chain(v.into_iter())
+                    .chain(std::iter::once(0))
+                    .collect()
+            });
+        self.shortest_tour_impl(dist, indices)
+    }
+
+    /// Finds the shortest acyclic tour (i.e. start != end) through the graph,
+    /// evaluating `dist` for every edge. The tour distance is then the
+    /// accumulation of `dist` over all edges. This accommodates the general
+    /// case for directed graphs where the forward distance does not equal the
+    /// reverse distance.
+    pub fn shortest_acyclic_tour_by(
+        &self,
+        dist: fn(Weight, Weight) -> Weight,
+    ) -> (Vec<usize>, Weight) {
+        let indices = (0..self.nodes.len()).permutations(self.nodes.len());
+        self.shortest_tour_impl(dist, indices)
+    }
+
+    /// Finds the shortest cyclic tour of an undirected graph by accumulating
+    /// the forward distance for each pair of nodes
+    pub fn shortest_cyclic_tour(&self) -> (Vec<usize>, Weight) {
+        self.shortest_cyclic_tour_by(|p, _| p)
+    }
+
+    /// Finds the shortest acyclic tour of an undirected graph by accumulating
+    /// the forward distance for each pair of nodes
+    pub fn shortest_acyclic_tour(&self) -> (Vec<usize>, Weight) {
+        self.shortest_acyclic_tour_by(|p, _| p)
     }
 }
 
