@@ -39,7 +39,7 @@ impl CommandLineInterface {
                 )
                 .arg(
                     Arg::with_name(INPUT)
-                        .default_value("./input")
+                        .default_value(".")
                         .help(
                             "Path to input files directory (assumes subdirectories named by year)",
                         )
@@ -60,30 +60,28 @@ impl CommandLineInterface {
     }
 
     pub fn get_years(&self) -> Vec<i32> {
-        self.get_cli_int_sequence(YEARS)
+        self.get_int_sequence(YEARS)
     }
 
     pub fn get_days(&self) -> Vec<i32> {
-        self.get_cli_int_sequence(DAYS)
+        self.get_int_sequence(DAYS)
     }
 
     pub fn get_input_dir(&self) -> std::path::PathBuf {
         self.iface.value_of(INPUT).unwrap().into()
     }
 
-    fn get_cli_int_sequence(&self, flag: &str) -> Vec<i32> {
-        match self.iface.value_of(flag) {
-            Some(v) => {
-                v.split(',')
-                    .flat_map(IntSpecifier::from_str)
-                    .fold(Vec::new(), |mut acc, d| {
-                        match d {
-                            IntSpecifier::Single(n) => acc.push(n),
-                            IntSpecifier::Range(l, u) => acc.extend(l..=u),
-                        };
-                        acc
-                    })
-            }
+    fn get_int_sequence(&self, flag: &str) -> Vec<i32> {
+        match self.iface.values_of(flag) {
+            Some(v) => v
+                .flat_map(IntSpecifier::from_str)
+                .fold(Vec::new(), |mut acc, d| {
+                    match d {
+                        IntSpecifier::Single(n) => acc.push(n),
+                        IntSpecifier::Range(l, u) => acc.extend(l..=u),
+                    };
+                    acc
+                }),
             None => Vec::new(),
         }
     }
