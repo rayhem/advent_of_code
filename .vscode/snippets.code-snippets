@@ -19,7 +19,7 @@
 		"scope": "",
 		"prefix": "new solution",
 		"body": [
-			"use utils::solution::Solution;",
+			"use crate::utils::solution::Solution;",
 			"",
 			"pub struct Day$1 {}",
 			"",
@@ -32,6 +32,8 @@
 			"        None",
 			"    }",
 			"}$0",
+			"",
+			"crate::verify!(Day$1, crate::my_input!(\"$2\", \"$1\"), \"\", \"\");"
 		],
 		"description": "Template for each day's solution"
 	},
