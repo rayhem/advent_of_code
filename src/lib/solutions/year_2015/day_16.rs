@@ -58,7 +58,7 @@ impl Sue {
             "pomeranians" | "goldfish" => tape
                 .get(key)
                 .map_or(false, |&tape_value| *value < tape_value),
-            _ => tape.get(key).to_owned() == Some(&value),
+            _ => tape.get(key) == Some(value),
         })
     }
 }
