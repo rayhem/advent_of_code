@@ -4,13 +4,21 @@ pub struct Day01 {}
 
 impl Solution for Day01 {
     fn part_one(&self, input: &str) -> Option<String> {
-        Some(input.chars().map(as_number).sum::<i32>().to_string())
+        Some(
+            input
+                .as_bytes()
+                .into_iter()
+                .map(as_number)
+                .sum::<i32>()
+                .to_string(),
+        )
     }
 
     fn part_two(&self, input: &str) -> Option<String> {
         Some(
             (input
-                .chars()
+                .as_bytes()
+                .into_iter()
                 .scan(0, |acc, c| {
                     *acc += as_number(c);
                     Some(*acc)
@@ -23,10 +31,10 @@ impl Solution for Day01 {
     }
 }
 
-fn as_number(ch: char) -> i32 {
+fn as_number(ch: &u8) -> i32 {
     match ch {
-        '(' => 1,
-        ')' => -1,
+        b'(' => 1,
+        b')' => -1,
         _ => 0,
     }
 }
