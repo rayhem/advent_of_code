@@ -3,6 +3,8 @@ use itertools::Itertools;
 use std::collections::HashMap;
 use std::hash::Hash;
 
+pub mod dijkstra;
+
 /// Details an edge in a graph between nodes `a` and `b`. The `data` field
 /// defaults to the zero-sized unit type, `()`, which is suitable for undirected
 /// graphs. The generic flexibility in `data` allows for representations of
@@ -152,7 +154,7 @@ where
     /// case for directed graphs where the forward distance does not equal the
     /// reverse distance.
     ///
-    /// Assumes the tour starts and ends at nodes[0].
+    /// Assumes the tour starts and ends at `nodes.front()`.
     pub fn shortest_cyclic_tour_by(
         &self,
         dist: fn(forward_weight: Option<Weight>, backward_weight: Option<Weight>) -> Option<Weight>,

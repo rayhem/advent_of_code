@@ -11,20 +11,35 @@ impl Solution for Day22 {
     fn part_one(&self, _input: &str) -> Option<String> {
         let mut heap = BinaryHeap::<Node>::new();
 
-        let mut start = Node::start(10, 250, 13);
+        let start = Node::new(PlayerState::new(14, 250), BossState::new(10, 9));
 
-        heap.push(start);
+        println!("START: {:#?}", start);
 
-        while let Some(node) = heap.pop() {
-            if node.game_state.boss_health <= 0 {
-                println!("HERE: {:#?}", node);
-                break;
-            }
-
-            heap.extend(node.neighbors());
+        for (i, item) in start.neighbors().iter().enumerate() {
+            println!("\tNEIGHBOR {}: {:#?}", i, item);
         }
 
-        // println!("{:#?}", heap);
+        for (j, item) in start
+            .neighbors()
+            .last()
+            .unwrap()
+            .neighbors()
+            .iter()
+            .enumerate()
+        {
+            println!("\t\tNEIGHBOR 4.{}: {:#?}", j, item);
+        }
+
+        // heap.push(start);
+
+        // while let Some(node) = heap.pop() {
+        //     if node.game_state.boss_state.health <= 0 {
+        //         println!("{:#?}", node);
+        //         break;
+        //     }
+
+        //     heap.extend(node.neighbors());
+        // }
 
         todo!()
     }
@@ -61,20 +76,20 @@ impl Spell {
 const SPELLS: [Spell; 5] = [
     Spell::new("Magic missile", 53, 0, |spell, mut game_state| {
         game_state.player_state.mana -= spell.cost;
-        game_state.boss_health -= 4;
+        game_state.boss_state.health -= 4;
 
         game_state
     }),
     Spell::new("Drain", 73, 0, |spell, mut game_state| {
         game_state.player_state.mana -= spell.cost;
-        game_state.boss_health -= 2;
+        game_state.boss_state.health -= 2;
         game_state.player_state.health += 2;
 
         game_state
     }),
     Spell::new("Shield", 113, 6, |spell, mut game_state| {
         game_state.player_state.mana -= spell.cost;
-        game_state.active_spells.push(SpellState {
+        game_state.active_spells.push(SpellEffect {
             name: spell.name.to_string(),
             duration: spell.duration,
             effect: |name, mut game_state| {
@@ -91,13 +106,13 @@ const SPELLS: [Spell; 5] = [
     }),
     Spell::new("Poison", 173, 6, |spell, mut game_state| {
         game_state.player_state.mana -= spell.cost;
-        game_state.active_spells.push(SpellState {
+        game_state.active_spells.push(SpellEffect {
             name: spell.name.to_string(),
             duration: spell.duration,
             effect: |name, mut game_state| {
                 if let Some(spell_state) = game_state.find_active_spell_by_name(name) {
                     spell_state.duration -= 1;
-                    game_state.boss_health -= 3;
+                    game_state.boss_state.health -= 3;
                 }
 
                 game_state
@@ -108,7 +123,7 @@ const SPELLS: [Spell; 5] = [
     }),
     Spell::new("Recharge", 229, 5, |spell, mut game_state| {
         game_state.player_state.mana -= spell.cost;
-        game_state.active_spells.push(SpellState {
+        game_state.active_spells.push(SpellEffect {
             name: spell.name.to_string(),
             duration: spell.duration,
             effect: |name, mut game_state| {
@@ -125,15 +140,37 @@ const SPELLS: [Spell; 5] = [
     }),
 ];
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Copy, Debug)]
 struct PlayerState {
     health: i32,
     armor: i32,
     mana: i32,
 }
 
+impl PlayerState {
+    fn new(health: i32, mana: i32) -> Self {
+        PlayerState {
+            health,
+            armor: 0,
+            mana,
+        }
+    }
+}
+
+#[derive(Clone, Copy, Debug)]
+struct BossState {
+    health: i32,
+    damage: i32,
+}
+
+impl BossState {
+    fn new(health: i32, damage: i32) -> Self {
+        BossState { health, damage }
+    }
+}
+
 #[derive(Clone, Debug)]
-struct SpellState {
+struct SpellEffect {
     name: String,
     duration: i32,
     effect: fn(&str, GameState) -> GameState,
@@ -142,12 +179,12 @@ struct SpellState {
 #[derive(Clone, Debug)]
 struct GameState {
     player_state: PlayerState,
-    boss_health: i32,
-    active_spells: Vec<SpellState>,
+    boss_state: BossState,
+    active_spells: Vec<SpellEffect>,
 }
 
 impl GameState {
-    fn find_active_spell_by_name(&mut self, name: &str) -> Option<&mut SpellState> {
+    fn find_active_spell_by_name(&mut self, name: &str) -> Option<&mut SpellEffect> {
         self.active_spells.iter_mut().find(|item| item.name == name)
     }
 
@@ -167,17 +204,13 @@ struct Node {
 }
 
 impl Node {
-    /// Generates a zero-cost [`Node`] with default values and nothing going on in-game
-    fn start(player_health: i32, player_mana: i32, boss_health: i32) -> Self {
+    /// Generates a zero-cost [`Node`] with nothing going on in-game
+    fn new(player_state: PlayerState, boss_state: BossState) -> Self {
         Self {
             cost: 0,
             game_state: GameState {
-                player_state: PlayerState {
-                    health: player_health,
-                    armor: 0,
-                    mana: player_mana,
-                },
-                boss_health,
+                player_state,
+                boss_state,
                 active_spells: Vec::default(),
             },
         }
@@ -205,14 +238,14 @@ impl Node {
                     .any(|spell_state| spell_state.name == spell.name)
                     || next_node.game_state.player_state.mana < spell.cost
                 {
-                    None // Can't have the same effect active twice
-                } else {
-                    // Cast the spell in the current `map` invocation
-                    next_node.cost += spell.cost;
-                    next_node.game_state = (spell.cast_effect)(spell, next_node.game_state);
-
-                    Some(next_node)
+                    return None; // Can't have the same effect active twice
                 }
+
+                // Cast the spell in the current `map` invocation
+                next_node.cost += spell.cost;
+                next_node.game_state = (spell.cast_effect)(spell, next_node.game_state);
+
+                Some(next_node)
             })
             .collect()
     }
