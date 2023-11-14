@@ -21,7 +21,7 @@ pub mod day_18;
 pub mod day_19;
 pub mod day_20;
 pub mod day_21;
-
+pub mod day_22;
 pub mod day_23;
 
 pub fn solutions() -> DayAssociations {
@@ -47,6 +47,7 @@ pub fn solutions() -> DayAssociations {
         (19, Box::new(day_19::Day19 {})),
         (20, Box::new(day_20::Day20 {})),
         (21, Box::new(day_21::Day21 {})),
+        (22, Box::new(day_22::Day22 {})),
         (23, Box::new(day_23::Day23 {})),
     ];
 
