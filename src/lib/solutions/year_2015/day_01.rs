@@ -7,7 +7,7 @@ impl Solution for Day01 {
         Some(
             input
                 .as_bytes()
-                .into_iter()
+                .iter()
                 .map(as_number)
                 .sum::<i32>()
                 .to_string(),
@@ -18,7 +18,7 @@ impl Solution for Day01 {
         Some(
             (input
                 .as_bytes()
-                .into_iter()
+                .iter()
                 .scan(0, |acc, c| {
                     *acc += as_number(c);
                     Some(*acc)
