@@ -1,5 +1,3 @@
-use std::ops::Index;
-
 use crate::utils::solution::Solution;
 
 pub struct Day01 {}
