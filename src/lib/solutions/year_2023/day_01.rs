@@ -41,17 +41,14 @@ fn calibration_value_from_digits(s: &str) -> Option<usize> {
 }
 
 fn calibration_value_from_words(s: &str) -> Option<usize> {
-    let (first, _) = WORDS
-        .iter()
-        .enumerate()
-        .chain(DIGITS.iter().enumerate())
+    let numbers = WORDS.iter().enumerate().chain(DIGITS.iter().enumerate());
+
+    let (first, _) = numbers
+        .clone()
         .min_by_key(|(_, num)| s.find(**num).unwrap_or(usize::MAX))?;
 
-    let (last, _) = WORDS
-        .iter()
-        .enumerate()
-        .chain(DIGITS.iter().enumerate())
-        .max_by_key(|(_, num)| s.rfind(**num).map(|i| i as i32).unwrap_or(i32::MIN))?;
+    let (last, _) =
+        numbers.max_by_key(|(_, num)| s.rfind(**num).map(|i| i as i32).unwrap_or(i32::MIN))?;
 
     Some(10 * first + last)
 }

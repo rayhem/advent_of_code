@@ -1,6 +1,8 @@
 #!/bin/bash
 # USAGE: ADVENT_TOKEN=<sesion> get_input.sh year day
 
+echo $ADVENT_TOKEN
+
 currentYear=$(date +%Y)
 year=$1
 if [[ "$year" -lt "2015" ]] || [[ "$year" -gt "$currentYear" ]]; then
