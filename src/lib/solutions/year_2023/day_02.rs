@@ -148,4 +148,4 @@ Game 5: 6 red, 1 blue, 3 green; 2 blue, 1 red, 2 green
     }
 }
 
-crate::verify!(Day02, crate::my_input!("2023", "02"), "", "");
+crate::verify!(Day02, crate::my_input!("2023", "02"), "2879", "65122");
