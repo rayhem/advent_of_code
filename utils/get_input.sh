@@ -1,7 +1,7 @@
 #!/bin/bash
 # USAGE: ADVENT_TOKEN=<sesion> get_input.sh year day
 
-echo $ADVENT_TOKEN
+#echo $ADVENT_TOKEN
 
 currentYear=$(date +%Y)
 year=$1
