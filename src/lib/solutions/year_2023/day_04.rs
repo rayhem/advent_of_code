@@ -2,15 +2,19 @@ use std::{collections::HashSet, str::FromStr};
 
 use crate::utils::solution::Solution;
 
+/// Puzzle: <https://adventofcode.com/2023/day/4>
+
 pub struct Day04 {}
 
 impl Solution for Day04 {
+    /// Computes the total number of [points](Card::points) for a collection of scratchcards
     fn part_one(&self, input: &str) -> Option<String> {
         Scratchcards::from_str(input)
             .map(|sc| sc.total_points().to_string())
             .ok()
     }
 
+    /// Computes the total number of scratchcards produced from an initial set
     fn part_two(&self, input: &str) -> Option<String> {
         Scratchcards::from_str(input)
             .map(|sc| sc.total_cards().to_string())
@@ -61,6 +65,9 @@ struct Card {
     have_numbers: Numbers,
 }
 
+/// Representation of a single scratchcard
+///
+
 impl Card {
     fn new(winning_numbers: Numbers, have_numbers: Numbers) -> Self {
         Self {
@@ -75,6 +82,23 @@ impl Card {
             .count() as i32
     }
 
+    /// Compute the point value of the card. Starting at 1 point for the first
+    /// matching number, the point value doubles for each additional match. A
+    /// [`Card`] with no matching numbers is worth zero points.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// use std::collections::HashSet;
+    /// use advent::solutions::year_2023::day_04::Card;
+    ///
+    /// let winning_numbers = HashSet::from([41, 48, 83, 86, 17]);
+    /// let have_numbers = HashSet::from([83, 86, 6, 31, 17, 9, 48, 53]);
+    /// let card = Card::new(winning_numbers, have_numbers);
+    ///
+    /// // 17, 48, 83, and 86 all match, so the card is worth 8 points
+    /// assert_eq!(card.points(), 8);
+    /// ```
     fn points(&self) -> i32 {
         let n = self.num_winning_numbers();
         match n {
