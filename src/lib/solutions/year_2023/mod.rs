@@ -7,6 +7,7 @@ pub mod day_04;
 
 pub mod day_06;
 pub mod day_07;
+pub mod day_08;
 
 pub fn solutions() -> DayAssociations {
     let associations: Vec<(i32, super::BoxedSolution)> = vec![
@@ -16,6 +17,7 @@ pub fn solutions() -> DayAssociations {
         (4, Box::new(day_04::Day04 {})),
         (6, Box::new(day_06::Day06 {})),
         (7, Box::new(day_07::Day07 {})),
+        (8, Box::new(day_08::Day08 {})),
     ];
 
     associations.into_iter().collect()

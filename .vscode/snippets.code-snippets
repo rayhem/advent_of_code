@@ -33,7 +33,7 @@
 			"    }",
 			"}$0",
 			"",
-			"crate::verify!(Day$1, crate::my_input!(\"$2\", \"$1\"), \"\", \"\");"
+			"crate::verify!(Day$1, crate::my_input!(\"$2\", \"Day$1\"), \"\", \"\");"
 		],
 		"description": "Template for each day's solution"
 	},
