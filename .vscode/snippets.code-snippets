@@ -37,6 +37,20 @@
 		],
 		"description": "Template for each day's solution"
 	},
+	"Tests": {
+		"scope": "",
+		"prefix": "tests",
+		"body": [
+			"#[cfg(test)]",
+			"mod tests {",
+			"    use super::*;",
+			"",
+			"    #[test]",
+			"    fn example() {$0}",
+			"}"
+		],
+		"description": "Create a test module"
+	},
 	"New enum": {
 		"scope": "",
 		"prefix": "enum",
