@@ -125,13 +125,13 @@ impl Dimensions {
     }
 
     fn check(value: usize, max_value: usize, name: &'static str) -> Result<()> {
-        Ok((value < max_value)
+        (value < max_value)
             .then_some(())
             .ok_or(error::Error::IndexOutOfBounds {
                 item: name,
-                value: value,
-                max_value: max_value,
-            })?)
+                value,
+                max_value,
+            })
     }
 
     pub fn check_index(&self, index: usize) -> Result<()> {
@@ -148,11 +148,11 @@ impl Dimensions {
 
     pub fn check_row_and_col(&self, row: usize, col: usize) -> Result<()> {
         self.check_row(row)?;
-        self.check_col(col)?;
-        Ok(())
+        self.check_col(col)
     }
 }
 
+#[allow(dead_code)]
 #[derive(Clone, Debug, Default)]
 pub struct Grid<T> {
     values: Vec<T>,
