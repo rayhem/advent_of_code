@@ -57,7 +57,7 @@ impl FromStr for Image {
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         let num_rows = s.lines().count();
-        let num_cols = s.lines().next().unwrap().chars().count();
+        let num_cols = s.lines().next().ok_or(Self::Err::EmptyInputStr)?.chars().count();
 
         let mut galaxies = Vec::new();
         let mut empty_rows = (0..num_rows).collect::<HashSet<_>>();
@@ -127,7 +127,6 @@ mod tests {
         );
 
         assert_eq!(image.pairwise_total(2), 374);
-
         assert_eq!(image.pairwise_total(10), 1030);
         assert_eq!(image.pairwise_total(100), 8410);
     }
