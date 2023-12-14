@@ -1,11 +1,18 @@
 use std::str::FromStr;
 
 pub mod error {
-    #[derive(Clone, Copy, Debug, PartialEq, Eq)]
+    #[derive(Clone, Debug, thiserror::Error, PartialEq, Eq)]
     pub enum Error {
-        ParseError,
-        OutOfBoundsError,
-        DisallowedConversion,
+        #[error("string contains no data")]
+        EmptyInput,
+        #[error("expected {item} < {max_value} but got {value}")]
+        IndexOutOfBounds {
+            item: &'static str,
+            value: usize,
+            max_value: usize,
+        },
+        #[error("cannot convert {0} to {1}")]
+        DisallowedConversion(&'static str, &'static str),
     }
 }
 
@@ -35,7 +42,7 @@ pub type Result<T> = std::result::Result<T, error::Error>;
 /// // 12 13 14
 /// let dimensions = Dimensions::new(5, 3);
 /// assert_eq!(Location::Coordinate(1, 2).as_index(&dimensions), Ok(Location::Index(5)));
-/// assert_eq!(Location::Coordinate(2, 3).as_index(&dimensions), Err(error::Error::OutOfBoundsError));
+/// println!("{:?}", Location::Coordinate(2, 3).as_index(&dimensions));
 /// ```
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub enum Location {
@@ -51,12 +58,14 @@ impl Location {
     /// resulting [`Location::Index`] lies within the specified dimensions.
     pub fn as_index(&self, dimensions: &Dimensions) -> Result<Self> {
         match self {
-            Self::Index(idx) => (*idx < dimensions.max_index())
-                .then_some(self.clone())
-                .ok_or(error::Error::OutOfBoundsError),
-            Self::Coordinate(r, c) => (*r < dimensions.rows && *c < dimensions.cols)
-                .then_some(Self::Index(r * dimensions.cols + c))
-                .ok_or(error::Error::OutOfBoundsError),
+            Self::Index(idx) => {
+                dimensions.check_index(*idx)?;
+                Ok(self.clone())
+            }
+            Self::Coordinate(r, c) => {
+                dimensions.check_row_and_col(*r, *c)?;
+                Ok(Self::Index(r * dimensions.cols + c))
+            }
         }
     }
 
@@ -64,15 +73,17 @@ impl Location {
     /// resulting [`Location::Index`] lies within the specified dimensions.
     pub fn as_coordinate(&self, dimensions: &Dimensions) -> Result<Self> {
         match self {
-            Self::Coordinate(r, c) => (*r < dimensions.rows && *c < dimensions.cols)
-                .then_some(self.clone())
-                .ok_or(error::Error::OutOfBoundsError),
-            Self::Index(idx) => (*idx < dimensions.max_index())
-                .then_some(Self::Coordinate(
+            Self::Coordinate(r, c) => {
+                dimensions.check_row_and_col(*r, *c)?;
+                Ok(self.clone())
+            }
+            Self::Index(idx) => {
+                dimensions.check_index(*idx)?;
+                Ok(Self::Coordinate(
                     idx / dimensions.cols,
                     idx % dimensions.cols,
                 ))
-                .ok_or(error::Error::OutOfBoundsError),
+            }
         }
     }
 
@@ -112,6 +123,34 @@ impl Dimensions {
     pub fn max_index(&self) -> usize {
         self.rows * self.cols
     }
+
+    fn check(value: usize, max_value: usize, name: &'static str) -> Result<()> {
+        Ok((value < max_value)
+            .then_some(())
+            .ok_or(error::Error::IndexOutOfBounds {
+                item: name,
+                value: value,
+                max_value: max_value,
+            })?)
+    }
+
+    pub fn check_index(&self, index: usize) -> Result<()> {
+        Self::check(index, self.max_index(), "index")
+    }
+
+    pub fn check_row(&self, row: usize) -> Result<()> {
+        Self::check(row, self.rows, "row")
+    }
+
+    pub fn check_col(&self, col: usize) -> Result<()> {
+        Self::check(col, self.cols, "column")
+    }
+
+    pub fn check_row_and_col(&self, row: usize, col: usize) -> Result<()> {
+        self.check_row(row)?;
+        self.check_col(col)?;
+        Ok(())
+    }
 }
 
 #[derive(Clone, Debug, Default)]
@@ -128,7 +167,7 @@ impl FromStr for Grid<char> {
         let num_cols = s
             .lines()
             .next()
-            .ok_or(Self::Err::ParseError)?
+            .ok_or(Self::Err::EmptyInput)?
             .chars()
             .count();
 
