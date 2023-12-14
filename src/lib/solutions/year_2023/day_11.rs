@@ -47,9 +47,8 @@ impl Image {
         self.galaxies
             .iter()
             .tuple_combinations()
-            .fold(0, |acc, (p1, p2)| {
-                acc + self.pairwise_distance(p1, p2, expansion_factor)
-            })
+            .map(|(pos1, pos2)| self.pairwise_distance(pos1, pos2, expansion_factor))
+            .sum()
     }
 }
 
