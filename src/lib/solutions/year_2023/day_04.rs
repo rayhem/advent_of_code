@@ -3,7 +3,6 @@ use std::{collections::HashSet, str::FromStr};
 use crate::utils::solution::Solution;
 
 /// Puzzle: <https://adventofcode.com/2023/day/4>
-
 pub struct Day04 {}
 
 impl Solution for Day04 {
@@ -66,8 +65,6 @@ struct Card {
 }
 
 /// Representation of a single scratchcard
-///
-
 impl Card {
     fn new(winning_numbers: Numbers, have_numbers: Numbers) -> Self {
         Self {

@@ -35,9 +35,9 @@ impl FromStr for Password {
     }
 }
 
-impl ToString for Password {
-    fn to_string(&self) -> String {
-        self.0.iter().map(|n| *n as char).join("")
+impl std::fmt::Display for Password {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{}", self.0.iter().map(|n| *n as char).join(""))
     }
 }
 

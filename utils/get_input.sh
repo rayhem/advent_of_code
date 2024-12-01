@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # USAGE: ADVENT_TOKEN=<sesion> get_input.sh year day
 
 #echo $ADVENT_TOKEN

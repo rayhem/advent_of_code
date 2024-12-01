@@ -111,7 +111,7 @@ impl FromStr for Command {
             let trigits = s.split(" = ").last().unwrap();
             Ok(Command::Mask(Mask::from_str(trigits).unwrap()))
         } else {
-            let hunks: Vec<_> = s.split(|c| c == '[' || c == ']' || c == ' ').collect();
+            let hunks: Vec<_> = s.split(['[', ']', ' ']).collect();
             let address = hunks[1].parse()?;
             let value = hunks[4].parse()?;
 

@@ -191,7 +191,7 @@ impl FromStr for Network {
         let chars = s.chars().map(Segment::try_from);
 
         let rows = s.lines().count();
-        let cols = chars.clone().position(|s| matches!(s, Err(_))).unwrap();
+        let cols = chars.clone().position(|s| s.is_err()).unwrap();
 
         Ok(Self {
             dimensions: Dimensions { rows, cols },

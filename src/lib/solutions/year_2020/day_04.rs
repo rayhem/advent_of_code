@@ -24,13 +24,13 @@ fn check_passports(input: &str, checker: fn(&Passport) -> bool) -> usize {
 
 #[derive(Clone, Debug)]
 enum Day04Error {
-    ParseIntError(ParseIntError),
+    ParseIntError,
     UnknownField,
 }
 
 impl From<std::num::ParseIntError> for Day04Error {
-    fn from(err: ParseIntError) -> Day04Error {
-        Day04Error::ParseIntError(err)
+    fn from(_err: ParseIntError) -> Day04Error {
+        Day04Error::ParseIntError
     }
 }
 
@@ -38,7 +38,7 @@ impl From<std::num::ParseIntError> for Day04Error {
 enum Height {
     Metric(i32),
     Imperial(i32),
-    Unknown(i32),
+    Unknown,
 }
 
 impl FromStr for Height {
@@ -49,7 +49,7 @@ impl FromStr for Height {
         Ok(match &s[i..] {
             "cm" => Height::Metric(s[..i].parse::<i32>()?),
             "in" => Height::Imperial(s[..i].parse::<i32>()?),
-            _ => Height::Unknown(s.parse::<i32>()?),
+            _ => Height::Unknown,
         })
     }
 }
@@ -114,7 +114,7 @@ impl Passport {
             self.height.map(|h| match h {
                 Height::Metric(x) => (150..=193).contains(&x),
                 Height::Imperial(x) => (59..=76).contains(&x),
-                Height::Unknown(_) => false,
+                Height::Unknown => false,
             }),
             self.hair_color
                 .as_ref()

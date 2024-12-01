@@ -105,11 +105,11 @@ fn score(ingredients: &[Ingredient], quantities: &Vec<i32>) -> i32 {
         totals[4] += ingredient.calories * quantity;
     }
 
-    return totals
+    totals
         .iter()
         .take(4)
         .map(|&value| value.max(0))
-        .product::<i32>();
+        .product::<i32>()
 }
 
 crate::verify!(Day15, crate::my_input!("2015", "15"), "", "");

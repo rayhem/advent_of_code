@@ -12,8 +12,4 @@ impl Solution for Day13 {
     }
 }
 
-struct Pattern {
-    
-}
-
 crate::verify!(Day13, crate::my_input!("2023", "Day13"), "", "");

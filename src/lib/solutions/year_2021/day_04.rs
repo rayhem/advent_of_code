@@ -1,5 +1,5 @@
-use std::{fmt::Display, str::FromStr};
 use crate::utils::solution::Solution;
+use std::{fmt::Display, str::FromStr};
 
 pub struct Day04 {}
 
@@ -19,8 +19,7 @@ impl Solution for Day04 {
 
     fn part_two(&self, input: &str) -> Option<String> {
         let (numbers, mut boards) = parse_input(input);
-        let mut winning_boards: Vec<(i32, Board)> = Vec::new();
-        winning_boards.reserve(boards.len());
+        let mut winning_boards: Vec<(i32, Board)> = Vec::with_capacity(boards.len());
 
         for number in numbers.into_iter() {
             boards.iter_mut().for_each(|b| b.mark(number));

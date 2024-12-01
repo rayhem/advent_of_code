@@ -69,7 +69,7 @@ fn potential_fields(
     valid_fields.into_iter().collect()
 }
 
-fn associated_fields(fields: &mut Vec<(String, HashSet<usize>)>) -> HashMap<String, usize> {
+fn associated_fields(fields: &mut [(String, HashSet<usize>)]) -> HashMap<String, usize> {
     fields.sort_by(|(_, first), (_, second)| second.len().cmp(&first.len()));
 
     let n = fields.len();
