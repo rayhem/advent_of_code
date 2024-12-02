@@ -50,6 +50,7 @@ fn sorted_lists(input: &str) -> (Vec<i32>, Vec<i32>) {
     (left.into_sorted_vec(), right.into_sorted_vec())
 }
 
+#[allow(unused_imports)]
 mod tests {
     use super::*;
 
