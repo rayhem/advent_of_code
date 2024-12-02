@@ -49,3 +49,29 @@ fn sorted_lists(input: &str) -> (Vec<i32>, Vec<i32>) {
 
     (left.into_sorted_vec(), right.into_sorted_vec())
 }
+
+mod tests {
+    use super::*;
+
+    #[test]
+    fn example() {
+        const INPUT: &str = "3   4
+4   3
+2   5
+1   3
+3   9
+3   3";
+
+        let soln = Day01 {};
+
+        assert_eq!(soln.part_one(INPUT), Some("11".to_string()));
+        assert_eq!(soln.part_two(INPUT), Some("31".to_string()));
+    }
+}
+
+crate::verify!(
+    Day01,
+    crate::my_input!("2024", "Day01"),
+    "1830467",
+    "26674158"
+);
