@@ -17,14 +17,14 @@ impl CommandLineInterface {
                 .version("v0.1")
                 .arg(
                     Arg::with_name(YEARS)
-                        .default_value("2015-2022")
+                        .default_value("2024")
                         .help("Specify yearly solutions to execute")
                         .long("year")
                         .short("y")
                         .takes_value(true)
                         .use_delimiter(true)
                         .validator(validate_int_sequence)
-                        .value_name("[2015-2022]"),
+                        .value_name("[2015-2024]"),
                 )
                 .arg(
                     Arg::with_name(DAYS)
