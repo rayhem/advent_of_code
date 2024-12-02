@@ -6,17 +6,28 @@ on:
   pull_request:
     branches: [ "main" ]
 
-env:
-  CARGO_TERM_COLOR: always
 
 jobs:
   build:
-
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest]
+        rust: [stable]
+    env:
+      CARGO_TERM_COLOR: always
 
     steps:
     - uses: actions/checkout@v3
+    - name: Install rust toolchain
+      run: rustup update ${{ matrix.rust }} && rustup default ${{ matrix.rust }}
+    - name: Install Clippy and Rustfmt
+      run: rustup component add clippy rustfmt
+    - name: Formatting
+      run: cargo clippy -- -D warnings
     - name: Build
       run: cargo build --verbose
-    - name: Run tests
+    - name: Test
       run: cargo test --verbose
+    - name: Clippy
+      run: cargo clippy -- --check
